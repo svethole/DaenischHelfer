@@ -1,20 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anki-Helfer Dänisch</title>
-
     <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
 
 <div class="container">
@@ -25,120 +16,70 @@
 
         <label for="sentence">Satz</label>
 
-        <div class="inputRow">
+        <div class="flex gap-sm">
+            <textarea id="sentence" class="flex-1" required></textarea>
 
-            <textarea
-                id="sentence"
-                required></textarea>
-
-            <button
-                type="button"
-                id="copySentence"
-                class="copyButton"
-                title="Satz kopieren">
-
+            <button type="button" id="copySentence"
+                    class="btn btn-success btn-icon copyButton"
+                    title="Satz kopieren">
                 📋
-
             </button>
-
         </div>
 
         <label for="word">Wort / Phrase</label>
 
-        <div class="inputRow">
+        <div class="flex gap-sm">
+            <input type="text" id="word" class="flex-1" required>
 
-            <input
-                type="text"
-                id="word"
-                required>
-
-            <button
-                type="button"
-                id="copyWord"
-                class="copyButton"
-                title="Wort kopieren">
-
+            <button type="button" id="copyWord"
+                    class="btn btn-success btn-icon copyButton"
+                    title="Wort kopieren">
                 📋
-
             </button>
-
         </div>
 
-        <div class="buttonRow">
-
-            <label class="checkboxLabel">
-
-                <input
-                    type="checkbox"
-                    id="enableTTS"
-                    checked>
-
+        <div class="flex-center gap-sm mt-xl">
+            <label class="checkboxLabel text-normal mt-sm">
+                <input type="checkbox" id="enableTTS" checked>
                 TTS-Datei erstellen
-
             </label>
 
-            <button
-                type="submit"
-                id="startButton"
-                disabled>
-
+            <button type="submit" id="startButton" class="btn" disabled>
                 Start
-
             </button>
 
-            <button
-                type="button"
-                id="clearButton"
-                class="dangerButton">
-
+            <button type="button" id="clearButton" class="btn btn-danger">
                 Alles löschen
-
             </button>
-
         </div>
 
     </form>
 
-    <div
-        class="preview"
-        id="preview"></div>
+    <div class="preview bg-preview border rounded mt-2xl text-lg" id="preview"></div>
 
-    <div
-        id="ttsStatus"
-        class="loading"></div>
-
+    <div id="ttsStatus" class="loading mt-md"></div>
     <div id="ttsDragContainer"></div>
 
-    <a
-        id="downloadLink"
-        class="downloadButton"
-        download="dansk_tts.mp3">
-
+    <a id="downloadLink"
+       class="btn btn-block mt-lg hidden"
+       download="dansk_tts.mp3">
         TTS downloaden
-
     </a>
 
-    <div class="historySection">
+    <div class="historySection mt-3xl">
 
-        <div class="historyHeader">
+        <div class="flex-between mb-md">
+            <h2>Letzte Anfragen</h2>
 
-            <button
-                type="button"
-                id="toggleHistoryButton">
-
+            <button type="button" id="toggleHistoryButton"
+                    class="btn">
                 Letzte Anfragen verbergen
-
             </button>
 
-            <button
-                type="button"
-                id="clearHistoryButton"
-                class="dangerButton">
-
+            <button type="button" id="clearHistoryButton"
+                    class="btn btn-danger">
                 Verlauf löschen
-
             </button>
-
         </div>
 
         <div id="historyList"></div>
@@ -150,5 +91,4 @@
 <script type="module" src="app.js"></script>
 
 </body>
-
 </html>

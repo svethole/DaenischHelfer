@@ -1,6 +1,5 @@
 /* ============================================================
  *  VARIABLEN / DESIGN-TOKENS
- *  (hier zentral Farben, Schatten etc. ablegen)
  *  ============================================================ */
 :root {
     --color-primary:       #1976d2;
@@ -35,6 +34,8 @@
     --font-size-icon: 20px;
 
     --shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    --transition-fast: 0.15s;
 }
 
 /* ============================================================
@@ -61,16 +62,13 @@ body {
 /* ============================================================
  *  FORMULAR-ELEMENTE
  *  ============================================================ */
-
-/* --- Labels --- */
 label {
     display: block;
     margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-xs) + 2px;
+    margin-bottom: var(--spacing-xs);
     font-weight: bold;
 }
 
-/* --- Textfelder --- */
 textarea,
 input[type="text"] {
     width: 100%;
@@ -85,96 +83,210 @@ textarea {
 }
 
 /* ============================================================
- *  BUTTONS
+ *  BUTTONS – Basis
  *  ============================================================ */
-button {
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
     padding: var(--spacing-sm) 14px;
-    background: var(--color-primary);
     color: white;
     border: none;
     border-radius: var(--border-radius);
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.15s;
+    text-decoration: none;
+    transition: background var(--transition-fast);
+    background: var(--color-primary);
 }
 
-button:hover {
+.btn:hover {
     background: var(--color-primary-hover);
 }
 
-button:disabled {
+.btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-/* --- Copy-Button --- */
-.copyButton {
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+/* --- Farbvarianten --- */
+.btn-success {
     background: var(--color-success);
 }
 
-.copyButton:hover {
+.btn-success:hover {
     background: var(--color-success-hover);
 }
 
-.copyButton img {
+.btn-danger {
+    background: var(--color-danger);
+}
+
+.btn-danger:hover {
+    background: var(--color-danger-hover);
+}
+
+/* --- Größen-Varianten --- */
+.btn-icon {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    font-size: var(--font-size-icon);
+}
+
+.btn-block {
+    display: flex;
+    text-align: center;
+}
+
+/* --- Spezielle Button-Styles --- */
+.btn-drag {
+    cursor: grab;
+}
+
+.btn-drag:active {
+    cursor: grabbing;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: inherit;
+    font-weight: normal;
+}
+
+.btn-ghost:hover {
+    background: rgba(0,0,0,0.08);
+}
+
+/* ============================================================
+ *  UTILITY-KLASSEN
+ *  ============================================================ */
+
+/* --- Flex-Layouts --- */
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-start {
+    display: flex;
+    align-items: flex-start;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.gap-sm {
+    gap: var(--spacing-sm);
+}
+
+.gap-md {
+    gap: var(--spacing-md);
+}
+
+/* --- Abstände (Margin) --- */
+.mt-sm  { margin-top: var(--spacing-sm); }
+.mt-md  { margin-top: var(--spacing-md); }
+.mt-lg  { margin-top: var(--spacing-lg); }
+.mt-xl  { margin-top: var(--spacing-xl); }
+.mt-2xl { margin-top: var(--spacing-2xl); }
+.mt-3xl { margin-top: var(--spacing-3xl); }
+
+.mb-sm  { margin-bottom: var(--spacing-sm); }
+.mb-md  { margin-bottom: var(--spacing-md); }
+.mb-xs  { margin-bottom: var(--spacing-xs); }
+
+/* --- Text --- */
+.text-bold     { font-weight: bold; }
+.text-normal   { font-weight: normal; }
+.text-muted    { color: var(--color-text-muted); }
+.text-primary  { color: var(--color-primary); }
+.text-sm       { font-size: var(--font-size-sm); }
+.text-lg       { font-size: var(--font-size-lg); }
+.text-center   { text-align: center; }
+
+/* --- Sichtbarkeit --- */
+.hidden {
+    display: none;
+}
+
+/* --- Box-Styling --- */
+.border {
+    border: 1px solid var(--color-border);
+}
+
+.rounded {
+    border-radius: var(--border-radius);
+}
+
+.bg-preview {
+    background: var(--color-bg-preview);
+}
+
+.bg-history {
+    background: var(--color-bg-history);
+}
+
+.bg-history-hover:hover {
+    background: var(--color-bg-history-hover);
+}
+
+/* --- Hover-Transition --- */
+.transition-bg {
+    transition: background var(--transition-fast);
+}
+
+.transition-transform {
+    transition: transform 0.1s;
+}
+
+.hover-scale:hover {
+    transform: scale(1.1);
+}
+
+/* ============================================================
+ *  SPEZIFISCHE KOMPONENTEN
+ *  ============================================================ */
+
+/* --- Copy-Button Icons --- */
+.copyButton img,
+.btn-icon img {
     width: var(--spacing-lg);
     height: var(--spacing-lg);
     object-fit: contain;
     filter: brightness(0) invert(1);
 }
 
-/* --- Danger-Button --- */
-.dangerButton {
-    background: var(--color-danger);
+/* --- Download- und Drag-Links --- */
+.downloadButton {
+    margin-top: var(--spacing-lg);
 }
 
-.dangerButton:hover {
-    background: var(--color-danger-hover);
+.downloadButton:not(.btn) {
+    display: none;
 }
 
-/* ============================================================
- *  ROW- / GRID-LAYOUTS
- *  ============================================================ */
-.inputRow {
-    display: flex;
-    gap: var(--spacing-sm);
-    align-items: flex-start;
-}
-
-.inputRow textarea,
-.inputRow input {
-    flex: 1;
-}
-
-.inputRow button {
-    margin-top: 0;
-    white-space: nowrap;
-}
-
-.buttonRow {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-xl);
-}
-
-/* ============================================================
- *  PREVIEW
- *  ============================================================ */
+/* --- Preview --- */
 .preview {
-    margin-top: var(--spacing-2xl);
     padding: var(--spacing-md);
-    background: var(--color-bg-preview);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
     line-height: 1.6;
-    font-size: var(--font-size-lg);
 }
 
 .highlight {
@@ -182,62 +294,18 @@ button:disabled {
     font-weight: bold;
 }
 
-/* ============================================================
- *  DOWNLOAD / TTS
- *  ============================================================ */
-.downloadButton {
-    display: none;
-    margin-top: var(--spacing-lg);
-    padding: 12px var(--spacing-lg);
-    background: var(--color-primary);
-    color: white;
-    text-decoration: none;
-    border-radius: var(--border-radius);
-    font-weight: bold;
-}
-
-.downloadButton:hover {
-    background: var(--color-primary-hover);
-}
-
-.loading {
-    margin-top: var(--spacing-md);
-    color: #555;
-}
-
-.ttsDragLink {
-    display: inline-block;
-    margin-top: var(--spacing-sm);
-    padding: var(--spacing-sm) 14px;
-    background: var(--color-success);
-    color: white;
-    text-decoration: none;
-    border-radius: var(--border-radius);
-    font-weight: bold;
-    cursor: grab;
-}
-
-.ttsDragLink:hover {
-    background: var(--color-success-hover);
-}
-
-/* ============================================================
- *  CHECKBOX (TTS aktivieren)
- *  ============================================================ */
-.checkboxLabel {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    margin-top: var(--spacing-lg);
-    font-weight: normal;
-}
-
+/* --- Checkbox --- */
 .checkboxLabel input[type="checkbox"] {
     transform: scale(1.2);
 }
 
+/* --- Loading-Text --- */
+.loading {
+    color: #555;
+}
+
 /* ============================================================
- *  HISTORY
+ *  HISTORY-KOMPONENTE
  *  ============================================================ */
 .historySection {
     margin-top: var(--spacing-3xl);
