@@ -9,6 +9,8 @@ import {
     createTTSFilename
 } from "./utils.js";
 
+import { MINIMAX_CONFIG } from "./api-config.js";
+
 export async function generateTTS(
     sentenceRaw
 ) {
@@ -28,7 +30,7 @@ try {
 
             headers: {
                 "Authorization":
-                "Bearer sk-api-A0P8J_zxo6IvyNjfjwrLs01_nazOwjE7X0EkipTw_IjSMh8TOVf0Fe53OD-TGFLFA9DPPiFbfJm2-LbfYx5VnJI8WeUu0Oysi-JhlkHXqj7X8o3awjPZiX0",
+                "Bearer " + MINIMAX_CONFIG.apiKey,
 
                 "Content-Type":
                 "application/json"

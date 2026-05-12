@@ -1,3 +1,6 @@
+# sensible Daten
+api-config.js
+
 # Python Cache
 __pycache__/
 *.pyc
