@@ -1,0 +1,14 @@
+# Python Cache
+__pycache__/
+*.pyc
+
+# Betriebssystem-Dateien
+.DS_Store
+Thumbs.db
+
+# IDE-Konfiguration
+.vscode/
+.idea/
+
+# Node
+node_modules/

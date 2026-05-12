@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Anki-Helfer Dänisch</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Anki-Helfer Dänisch</h1>
+
+    <form id="ankiForm">
+
+        <label for="sentence">Satz</label>
+
+        <div class="inputRow">
+
+            <textarea
+                id="sentence"
+                required></textarea>
+
+            <button
+                type="button"
+                id="copySentence"
+                class="copyButton"
+                title="Satz kopieren">
+
+                📋
+
+            </button>
+
+        </div>
+
+        <label for="word">Wort / Phrase</label>
+
+        <div class="inputRow">
+
+            <input
+                type="text"
+                id="word"
+                required>
+
+            <button
+                type="button"
+                id="copyWord"
+                class="copyButton"
+                title="Wort kopieren">
+
+                📋
+
+            </button>
+
+        </div>
+
+        <div class="buttonRow">
+
+            <label class="checkboxLabel">
+
+                <input
+                    type="checkbox"
+                    id="enableTTS"
+                    checked>
+
+                TTS-Datei erstellen
+
+            </label>
+
+            <button
+                type="submit"
+                id="startButton"
+                disabled>
+
+                Start
+
+            </button>
+
+            <button
+                type="button"
+                id="clearButton"
+                class="dangerButton">
+
+                Alles löschen
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <div
+        class="preview"
+        id="preview"></div>
+
+    <div
+        id="ttsStatus"
+        class="loading"></div>
+
+    <div id="ttsDragContainer"></div>
+
+    <a
+        id="downloadLink"
+        class="downloadButton"
+        download="dansk_tts.mp3">
+
+        TTS downloaden
+
+    </a>
+
+    <div class="historySection">
+
+        <div class="historyHeader">
+
+            <button
+                type="button"
+                id="toggleHistoryButton">
+
+                Letzte Anfragen verbergen
+
+            </button>
+
+            <button
+                type="button"
+                id="clearHistoryButton"
+                class="dangerButton">
+
+                Verlauf löschen
+
+            </button>
+
+        </div>
+
+        <div id="historyList"></div>
+
+    </div>
+
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+
+</html>

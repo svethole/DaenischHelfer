@@ -1,0 +1,252 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    padding: 30px;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+textarea,
+input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+button {
+    padding: 10px 14px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+button:hover {
+    background: #1565c0;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.copyButton {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: #43a047;
+}
+
+.copyButton:hover {
+    background: #388e3c;
+}
+
+.copyButton img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.dangerButton {
+    background: #C82909;
+}
+
+.dangerButton:hover {
+    background: #9C2007;
+}
+
+.preview {
+    margin-top: 30px;
+    padding: 15px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+.highlight {
+    background: yellow;
+    font-weight: bold;
+}
+
+.inputRow {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.inputRow textarea,
+.inputRow input {
+    flex: 1;
+}
+
+.inputRow button {
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+.buttonRow {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.downloadButton {
+    display: none;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: #1976d2;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.downloadButton:hover {
+    background: #1565c0;
+}
+
+.loading {
+    margin-top: 15px;
+    color: #555;
+}
+
+.historySection {
+    margin-top: 40px;
+}
+
+.historyHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.historyItem {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.historyItem:hover {
+    background: #f0f0f0;
+}
+
+.historySentence {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.historyWord {
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.historyTimestamp {
+    font-size: 13px;
+    color: #777;
+}
+
+.historyItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.historyContent {
+    flex: 1;
+}
+
+.deleteHistoryButton {
+
+    background: transparent;
+    border: none;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    padding: 6px;
+
+    border-radius: 6px;
+
+    transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.deleteHistoryButton:hover {
+
+    background: rgba(0,0,0,0.08);
+
+    transform: scale(1.1);
+}
+
+.historyCollapsed {
+    display: none;
+}
+
+.ttsDragLink {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #43a047;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: grab;
+}
+
+.ttsDragLink:hover {
+    background: #388e3c;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    font-weight: normal;
+}
+
+.checkboxLabel input[type="checkbox"] {
+    transform: scale(1.2);
+}
