@@ -1,24 +1,82 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    padding: 30px;
+/* ============================================================
+ *  VARIABLEN / DESIGN-TOKENS
+ *  (hier zentral Farben, Schatten etc. ablegen)
+ *  ============================================================ */
+:root {
+    --color-primary:       #1976d2;
+    --color-primary-hover: #1565c0;
+    --color-success:       #43a047;
+    --color-success-hover: #388e3c;
+    --color-danger:        #C82909;
+    --color-danger-hover:  #9C2007;
+    --color-bg-body:       #f4f4f4;
+    --color-bg-container:  #ffffff;
+    --color-bg-preview:    #fafafa;
+    --color-bg-history:    #fafafa;
+    --color-bg-history-hover: #f0f0f0;
+    --color-border:        #ddd;
+    --color-text-muted:    #777;
+    --color-highlight:     yellow;
+
+    --spacing-xs:  6px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 25px;
+    --spacing-2xl: 30px;
+    --spacing-3xl: 40px;
+
+    --border-radius: 8px;
+    --border-radius-lg: 10px;
+
+    --font-size-base: 16px;
+    --font-size-lg:   18px;
+    --font-size-sm:   13px;
+    --font-size-icon: 20px;
+
+    --shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+/* ============================================================
+ *  RESET / BASIS
+ *  ============================================================ */
+body {
+    font-family: Arial, sans-serif;
+    background: var(--color-bg-body);
+    padding: var(--spacing-2xl);
+}
+
+/* ============================================================
+ *  LAYOUT: CONTAINER
+ *  ============================================================ */
 .container {
     max-width: 800px;
     margin: auto;
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: var(--color-bg-container);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
 }
 
+/* ============================================================
+ *  FORMULAR-ELEMENTE
+ *  ============================================================ */
+
+/* --- Labels --- */
+label {
+    display: block;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-xs) + 2px;
+    font-weight: bold;
+}
+
+/* --- Textfelder --- */
 textarea,
 input[type="text"] {
     width: 100%;
     box-sizing: border-box;
-    padding: 10px;
-    font-size: 16px;
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-base);
 }
 
 textarea {
@@ -26,19 +84,15 @@ textarea {
     resize: vertical;
 }
 
-label {
-    display: block;
-    margin-top: 20px;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
-
+/* ============================================================
+ *  BUTTONS
+ *  ============================================================ */
 button {
-    padding: 10px 14px;
-    background: #1976d2;
+    padding: var(--spacing-sm) 14px;
+    background: var(--color-primary);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius);
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
@@ -46,7 +100,7 @@ button {
 }
 
 button:hover {
-    background: #1565c0;
+    background: var(--color-primary-hover);
 }
 
 button:disabled {
@@ -54,56 +108,43 @@ button:disabled {
     cursor: not-allowed;
 }
 
+/* --- Copy-Button --- */
 .copyButton {
     width: 42px;
     height: 42px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     padding: 0;
-
-    background: #43a047;
+    background: var(--color-success);
 }
 
 .copyButton:hover {
-    background: #388e3c;
+    background: var(--color-success-hover);
 }
 
 .copyButton img {
-    width: 20px;
-    height: 20px;
+    width: var(--spacing-lg);
+    height: var(--spacing-lg);
     object-fit: contain;
     filter: brightness(0) invert(1);
 }
 
+/* --- Danger-Button --- */
 .dangerButton {
-    background: #C82909;
+    background: var(--color-danger);
 }
 
 .dangerButton:hover {
-    background: #9C2007;
+    background: var(--color-danger-hover);
 }
 
-.preview {
-    margin-top: 30px;
-    padding: 15px;
-    background: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    line-height: 1.6;
-    font-size: 18px;
-}
-
-.highlight {
-    background: yellow;
-    font-weight: bold;
-}
-
+/* ============================================================
+ *  ROW- / GRID-LAYOUTS
+ *  ============================================================ */
 .inputRow {
     display: flex;
-    gap: 10px;
+    gap: var(--spacing-sm);
     align-items: flex-start;
 }
 
@@ -119,134 +160,150 @@ button:disabled {
 
 .buttonRow {
     display: flex;
-    gap: 10px;
-    margin-top: 25px;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
 }
 
+/* ============================================================
+ *  PREVIEW
+ *  ============================================================ */
+.preview {
+    margin-top: var(--spacing-2xl);
+    padding: var(--spacing-md);
+    background: var(--color-bg-preview);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    line-height: 1.6;
+    font-size: var(--font-size-lg);
+}
+
+.highlight {
+    background: var(--color-highlight);
+    font-weight: bold;
+}
+
+/* ============================================================
+ *  DOWNLOAD / TTS
+ *  ============================================================ */
 .downloadButton {
     display: none;
-    margin-top: 20px;
-    padding: 12px 20px;
-    background: #1976d2;
+    margin-top: var(--spacing-lg);
+    padding: 12px var(--spacing-lg);
+    background: var(--color-primary);
     color: white;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius);
     font-weight: bold;
 }
 
 .downloadButton:hover {
-    background: #1565c0;
+    background: var(--color-primary-hover);
 }
 
 .loading {
-    margin-top: 15px;
+    margin-top: var(--spacing-md);
     color: #555;
 }
 
+.ttsDragLink {
+    display: inline-block;
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) 14px;
+    background: var(--color-success);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    cursor: grab;
+}
+
+.ttsDragLink:hover {
+    background: var(--color-success-hover);
+}
+
+/* ============================================================
+ *  CHECKBOX (TTS aktivieren)
+ *  ============================================================ */
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    font-weight: normal;
+}
+
+.checkboxLabel input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+/* ============================================================
+ *  HISTORY
+ *  ============================================================ */
 .historySection {
-    margin-top: 40px;
+    margin-top: var(--spacing-3xl);
 }
 
 .historyHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-}
-
-.historyItem {
-    padding: 12px;
-    margin-bottom: 10px;
-    background: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-
-.historyItem:hover {
-    background: #f0f0f0;
-}
-
-.historySentence {
-    margin-bottom: 8px;
-    line-height: 1.5;
-}
-
-.historyWord {
-    font-weight: bold;
-    color: #1976d2;
-}
-
-.historyTimestamp {
-    font-size: 13px;
-    color: #777;
+    margin-bottom: var(--spacing-md);
 }
 
 .historyItem {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 15px;
+    gap: var(--spacing-md);
+    padding: 12px;
+    margin-bottom: var(--spacing-sm);
+    background: var(--color-bg-history);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.historyItem:hover {
+    background: var(--color-bg-history-hover);
 }
 
 .historyContent {
     flex: 1;
 }
 
-.deleteHistoryButton {
+.historySentence {
+    margin-bottom: var(--spacing-xs);
+    line-height: 1.5;
+}
 
+.historyWord {
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.historyTimestamp {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+/* --- History: löschen-Button --- */
+.deleteHistoryButton {
     background: transparent;
     border: none;
-
-    font-size: 20px;
-
+    font-size: var(--font-size-icon);
     cursor: pointer;
-
-    padding: 6px;
-
-    border-radius: 6px;
-
-    transition:
-    background 0.15s,
+    padding: var(--spacing-xs);
+    border-radius: var(--border-radius);
+    transition: background 0.15s,
     transform 0.1s;
 }
 
 .deleteHistoryButton:hover {
-
     background: rgba(0,0,0,0.08);
-
     transform: scale(1.1);
 }
 
 .historyCollapsed {
     display: none;
-}
-
-.ttsDragLink {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 14px;
-    background: #43a047;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: grab;
-}
-
-.ttsDragLink:hover {
-    background: #388e3c;
-}
-
-.checkboxLabel {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 20px;
-    font-weight: normal;
-}
-
-.checkboxLabel input[type="checkbox"] {
-    transform: scale(1.2);
 }
