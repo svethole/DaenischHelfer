@@ -177,8 +177,3 @@ export function updateHistoryVisibility() {
         "Letzte Anfragen verbergen";
     }
 }
-
-export async function clearAllHistory(validateForm, updatePreview) {
-    await saveHistoryToNextcloud([]);
-    await loadHistory(validateForm, updatePreview);
-}
