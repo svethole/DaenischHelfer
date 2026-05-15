@@ -3,13 +3,12 @@
 // ======================================
 
 import * as DOM from "./dom.js";
-import { escapeRegExp, createTTSFilename } from "./utils.js";
+import { escapeRegExp } from "./utils.js";
 import { updatePreview, validateForm, flashCopyButton } from "./ui.js";
-import { generateTTS, hideTTSLinks } from "./tts.js";
+import { generateTTS } from "./tts.js";
 import {
     loadHistory,
     saveToHistory,
-    deleteHistoryEntry,
     updateHistoryVisibility
 } from "./history.js";
 import {
@@ -19,11 +18,15 @@ import {
     getProcessedUrls,
     getLangConfig
 } from "./config.js";
-import { getCachedAudio, cacheAudio, getCacheStats } from "./tts-cache.js";
+import {
+    cacheAudio,
+    hasAudio,
+    clearAllHistory
+} from "./tts-cache.js";
 
 
 // ======================================
-// Sprach-Dropdown initialisieren
+// Sprach-Dropdown und Titel
 // ======================================
 
 function initLanguageSelector() {
@@ -45,15 +48,15 @@ function initLanguageSelector() {
     
     selector.addEventListener("change", (event) => {
         setActiveLang(event.target.value);
+        updatePageTitle();
         validateForm();
         updatePreview();
-        loadHistory(validateForm, updatePreview);
-        updatePageTitle();
+        loadHistory(validateForm, updatePreview, onHistoryLanguageChange);
     });
 }
 
-function updatePageTitle() {
-    const lang = getLangConfig();
+function updatePageTitle(langCode = null) {
+    const lang = getLangConfig(langCode);
     if (lang) {
         document.title = `Anki-Helfer ${lang.name}`;
         const h1 = document.querySelector("h1");
@@ -63,6 +66,26 @@ function updatePageTitle() {
     }
 }
 
+function onHistoryLanguageChange(langCode) {
+    // Dropdown aktualisieren
+    const selector = document.getElementById("languageSelector");
+    if (selector) {
+        selector.value = langCode;
+    }
+    
+    // Titel aktualisieren
+    setActiveLang(langCode);
+    updatePageTitle(langCode);
+}
+
+// ======================================
+// Download-Button zurücksetzen
+// ======================================
+
+function hideDownloadButton() {
+    DOM.downloadLink.style.display = "none";
+    DOM.downloadLink.href = "#";
+}
 
 // ======================================
 // Lokale Puffer für sentence / word
@@ -81,6 +104,7 @@ DOM.sentenceField.addEventListener("input", () => {
     localStorage.setItem("anki_sentence", DOM.sentenceField.value);
     validateForm();
     updatePreview();
+    hideDownloadButton();
 });
 
 // Doppelklick auf Wort im Satz
@@ -96,6 +120,7 @@ DOM.sentenceField.addEventListener("dblclick", () => {
         localStorage.setItem("anki_word", selectedText);
         validateForm();
         updatePreview();
+        hideDownloadButton();
     }
 });
 
@@ -104,6 +129,7 @@ DOM.wordField.addEventListener("input", () => {
     localStorage.setItem("anki_word", DOM.wordField.value);
     validateForm();
     updatePreview();
+    hideDownloadButton();
 });
 
 // Kopier-Buttons
@@ -122,16 +148,18 @@ DOM.clearButton.addEventListener("click", () => {
     DOM.sentenceField.value = "";
     DOM.wordField.value = "";
     DOM.preview.innerHTML = "";
+    hideDownloadButton();
     validateForm();
     updatePreview();
     DOM.sentenceField.focus();
 });
 
 // Verlauf löschen
-DOM.clearHistoryButton.addEventListener("click", () => {
+DOM.clearHistoryButton.addEventListener("click", async () => {
     if (confirm("Verlauf wirklich löschen?")) {
-        localStorage.removeItem("anki_history");
-        loadHistory(validateForm, updatePreview);
+        await clearAllHistory();
+        await loadHistory(validateForm, updatePreview, onHistoryLanguageChange);
+        hideDownloadButton();
     }
 });
 
@@ -145,11 +173,12 @@ DOM.toggleHistoryButton.addEventListener("click", () => {
 // TTS-Checkbox
 DOM.enableTTS.addEventListener("change", () => {
     if (!DOM.enableTTS.checked) {
-        hideTTSLinks();
+        hideDownloadButton();
+        DOM.ttsStatus.textContent = "";
     }
 });
 
-// Formular absenden (MIT CACHE-LOGIK)
+// Formular absenden
 DOM.form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
@@ -158,54 +187,52 @@ DOM.form.addEventListener("submit", async function (event) {
 
     if (!sentenceRaw || !wordRaw) return;
 
-    // Im Verlauf speichern (mit aktuellem Sprach-Code)
-    saveToHistory(sentenceRaw, wordRaw, getActiveLang(), validateForm, updatePreview);
+    const currentLang = getActiveLang();
 
-    // Cache-Key: sprachcode + satz (einfach und eindeutig)
-    const cacheId = `${getActiveLang()}_${sentenceRaw}`;
-    
-    // TTS generieren oder aus Cache laden
+    // TTS generieren und ID erhalten
+    let historyId = null;
+    let audioGenerated = false;
+
     if (DOM.enableTTS.checked) {
-        DOM.ttsStatus.textContent = "Prüfe Cache ...";
+        DOM.ttsStatus.textContent = "TTS wird erzeugt ...";
         
-        // 1. Cache prüfen
-        const cachedUrl = await getCachedAudio(cacheId);
+        const audioBlob = await generateTTS(sentenceRaw);
         
-        if (cachedUrl) {
-            // Aus Cache verwenden
-            DOM.downloadLink.href = cachedUrl;
-            DOM.downloadLink.download = createTTSFilename(sentenceRaw);
-            DOM.downloadLink.style.display = "inline-block";
-            DOM.ttsStatus.textContent = "✅ TTS aus Cache geladen.";
-            console.log("📦 Cache-Treffer:", cacheId);
-        } else {
-            // 2. Neu generieren
-            const audioBlob = await generateTTS(sentenceRaw);
+        if (audioBlob) {
+            // Erst History-Eintrag erstellen, dann ID für Audio nutzen
+            const entryId = Date.now(); // Temporäre ID
+            await saveToHistory(sentenceRaw, wordRaw, currentLang, validateForm, updatePreview);
             
-            // 3. In Cache speichern
-            if (audioBlob) {
-                await cacheAudio(cacheId, audioBlob);
-                console.log("💾 Audio gecacht:", cacheId);
+            // Jetzt die echte ID aus der DB holen und Audio speichern
+            const { loadHistory } = await import("./tts-cache.js");
+            const history = await loadHistory();
+            const lastEntry = history[0]; // Neuester Eintrag
+            
+            if (lastEntry) {
+                await cacheAudio(lastEntry.id, audioBlob);
+                audioGenerated = true;
             }
         }
     } else {
-        hideTTSLinks();
+        DOM.ttsStatus.textContent = "";
     }
 
-    // URLs aus Konfiguration holen und öffnen
+    // Immer History speichern (falls nicht schon durch TTS-Logik geschehen)
+    if (!audioGenerated) {
+        await saveToHistory(sentenceRaw, wordRaw, currentLang, validateForm, updatePreview);
+    }
+
+    // Download-Button aktualisieren
+    if (audioGenerated) {
+        // Button bleibt sichtbar durch loadHistory
+    } else {
+        hideDownloadButton();
+    }
+
+    // URLs öffnen
     const urls = getProcessedUrls(sentenceRaw, wordRaw);
     urls.forEach(url => window.open(url, "_blank"));
 });
-
-
-// ======================================
-// Cache-Info beim Start anzeigen (optional)
-// ======================================
-
-async function showCacheInfo() {
-    const stats = await getCacheStats();
-    console.log(`📦 TTS-Cache: ${stats.entries}/${stats.maxEntries} Einträge (${stats.totalSizeKB} KB)`);
-}
 
 
 // ======================================
@@ -216,6 +243,6 @@ initLanguageSelector();
 updatePageTitle();
 validateForm();
 updatePreview();
-loadHistory(validateForm, updatePreview);
+loadHistory(validateForm, updatePreview, onHistoryLanguageChange);
 updateHistoryVisibility();
-showCacheInfo();
+hideDownloadButton();

@@ -1,6 +1,6 @@
 import {
     downloadLink,
-    ttsStatus,
+    ttsStatus
 } from "./dom.js";
 
 import {
@@ -8,7 +8,7 @@ import {
     createTTSFilename
 } from "./utils.js";
 
-import { getApiKey, getTTSConfig, getActiveLang } from "./config.js";
+import { getApiKey, getTTSConfig } from "./config.js";
 
 export async function generateTTS(sentenceRaw) {
     
@@ -20,7 +20,7 @@ export async function generateTTS(sentenceRaw) {
     
     if (!ttsConfig) {
         ttsStatus.textContent = "Fehler: Keine TTS-Konfiguration gefunden.";
-        return null; // Jetzt mit Rückgabewert
+        return null;
     }
     
     try {
@@ -87,19 +87,18 @@ export async function generateTTS(sentenceRaw) {
         downloadLink.download = filename;
         
         downloadLink.style.display = "inline-block";
-        ttsStatus.textContent = "TTS erfolgreich erzeugt.";
+        ttsStatus.textContent = "✅ TTS erfolgreich erzeugt.";
         
-        return blob; // Blob zurückgeben für Cache
+        return blob;
         
     } catch (error) {
         console.error(error);
-        ttsStatus.textContent = "Fehler beim Erzeugen der TTS-Datei.";
+        ttsStatus.textContent = "❌ Fehler beim Erzeugen der TTS-Datei.";
         return null;
     }
 }
 
 export function hideTTSLinks() {
     downloadLink.style.display = "none";
-    ttsDragContainer.innerHTML = "";
     ttsStatus.textContent = "";
 }

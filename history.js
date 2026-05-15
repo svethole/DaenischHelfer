@@ -2,186 +2,126 @@ import {
     historyList,
     sentenceField,
     wordField,
-    toggleHistoryButton
+    toggleHistoryButton,
+    downloadLink
 } from "./dom.js";
 
 import { getLangConfig } from "./config.js";
+import { 
+    loadHistory as loadHistoryFromDB,
+    saveToHistory as saveToHistoryToDB,
+    deleteHistoryEntry as deleteFromDB,
+    getCachedAudio,
+    hasAudio
+} from "./tts-cache.js";
 
-export function loadHistory(
+export async function loadHistory(
     validateForm,
-    updatePreview
+    updatePreview,
+    onHistoryClick = null
 ) {
-
-    const history =
-    JSON.parse(
-        localStorage.getItem(
-            "anki_history"
-        ) || "[]"
-    );
+    const history = await loadHistoryFromDB();
 
     historyList.innerHTML = "";
 
-    history.forEach((entry, index) => {
-
-        const item =
-        document.createElement("div");
-
+    history.forEach((entry) => {
+        const item = document.createElement("div");
         item.className = "historyItem";
 
-        // Sprach-Flag für den Eintrag (falls vorhanden)
         const langConfig = getLangConfig(entry.lang);
         const flag = langConfig ? langConfig.flag : "";
 
         item.innerHTML = `
         <div class="historyContent">
-
         <div class="historySentence">
-        ${flag ? flag + " " : ""}${entry.sentence}
+        ${flag ? flag + " " : ""}${escapeHtml(entry.sentence)}
         </div>
-
         <div class="historyWord">
-        ${entry.word}
+        ${escapeHtml(entry.word)}
         </div>
-
         <div class="historyTimestamp">
-        ${entry.timestamp}
+        ${entry.displayTimestamp || entry.timestamp}
         </div>
-
         </div>
-
         <button
         class="deleteHistoryButton"
         title="Eintrag löschen">
-
         🗑
-
         </button>
         `;
 
-        item.querySelector(
-            ".historyContent"
-        ).addEventListener(
-            "click",
-            () => {
+        item.querySelector(".historyContent").addEventListener("click", async () => {
+            sentenceField.value = entry.sentence;
+            wordField.value = entry.word;
 
-                sentenceField.value =
-                entry.sentence;
+            validateForm();
+            updatePreview();
+            sentenceField.focus();
 
-                wordField.value =
-                entry.word;
-
-                validateForm();
-
-                updatePreview();
-
-                sentenceField.focus();
+            // Download-Button für diesen Eintrag aktualisieren
+            await updateDownloadButton(entry.id, entry.sentence);
+            
+            // Callback für Sprach-Update
+            if (onHistoryClick) {
+                onHistoryClick(entry.lang);
             }
-        );
+        });
 
-        item.querySelector(
-            ".deleteHistoryButton"
-        ).addEventListener(
-            "click",
-            (event) => {
-
-                event.stopPropagation();
-
-                deleteHistoryEntry(
-                    index,
-                    validateForm,
-                    updatePreview
-                );
-            }
-        );
+        item.querySelector(".deleteHistoryButton").addEventListener("click", async (event) => {
+            event.stopPropagation();
+            await deleteHistoryEntry(entry.id, validateForm, updatePreview);
+        });
 
         historyList.appendChild(item);
     });
 }
 
-export function saveToHistory(
-    sentence,
-    word,
-    lang,
-    validateForm,
-    updatePreview
-) {
-
-    const history =
-    JSON.parse(
-        localStorage.getItem(
-            "anki_history"
-        ) || "[]"
-    );
-
-    history.unshift({
-        sentence,
-        word,
-        lang,
-        timestamp:
-        new Date()
-        .toLocaleString("de-DE")
-    });
-
-    localStorage.setItem(
-        "anki_history",
-        JSON.stringify(history.slice(0, 100))
-    );
-
-    loadHistory(
-        validateForm,
-        updatePreview
-    );
+async function updateDownloadButton(historyId, sentence) {
+    // Prüfen, ob Audio für diesen Eintrag existiert
+    const audioExists = await hasAudio(historyId);
+    
+    if (audioExists) {
+        const audioUrl = await getCachedAudio(historyId);
+        if (audioUrl) {
+            downloadLink.href = audioUrl;
+            downloadLink.download = `tts_${sanitizeFilename(sentence)}.mp3`;
+            downloadLink.style.display = "inline-block";
+        }
+    } else {
+        downloadLink.style.display = "none";
+        downloadLink.href = "#";
+    }
 }
 
-export function deleteHistoryEntry(
-    index,
-    validateForm,
-    updatePreview
-) {
+export async function saveToHistory(sentence, word, lang, validateForm, updatePreview) {
+    await saveToHistoryToDB(sentence, word, lang);
+    await loadHistory(validateForm, updatePreview);
+}
 
-    const history =
-    JSON.parse(
-        localStorage.getItem(
-            "anki_history"
-        ) || "[]"
-    );
-
-    history.splice(index, 1);
-
-    localStorage.setItem(
-        "anki_history",
-        JSON.stringify(history)
-    );
-
-    loadHistory(
-        validateForm,
-        updatePreview
-    );
+export async function deleteHistoryEntry(id, validateForm, updatePreview) {
+    await deleteFromDB(id);
+    await loadHistory(validateForm, updatePreview);
 }
 
 export function updateHistoryVisibility() {
-
-    const collapsed =
-    localStorage.getItem(
-        "historyCollapsed"
-    ) === "true";
+    const collapsed = localStorage.getItem("historyCollapsed") === "true";
 
     if (collapsed) {
-
-        historyList.classList.add(
-            "historyCollapsed"
-        );
-
-        toggleHistoryButton.textContent =
-        "Letzte Anfragen zeigen";
-
+        historyList.classList.add("historyCollapsed");
+        toggleHistoryButton.textContent = "Letzte Anfragen zeigen";
     } else {
-
-        historyList.classList.remove(
-            "historyCollapsed"
-        );
-
-        toggleHistoryButton.textContent =
-        "Letzte Anfragen verbergen";
+        historyList.classList.remove("historyCollapsed");
+        toggleHistoryButton.textContent = "Letzte Anfragen verbergen";
     }
+}
+
+// Hilfsfunktionen
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function sanitizeFilename(text) {
+    return text.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
 }
