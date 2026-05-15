@@ -41,11 +41,6 @@ document.getElementById(
     "toggleHistoryButton"
 );
 
-export const ttsDragContainer =
-document.getElementById(
-    "ttsDragContainer"
-);
-
 export const enableTTS =
 document.getElementById(
     "enableTTS"

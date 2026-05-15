@@ -1,7 +1,6 @@
 import {
     downloadLink,
-    ttsStatus,
-    ttsDragContainer
+    ttsStatus
 } from "./dom.js";
 
 import {
@@ -87,18 +86,6 @@ export async function generateTTS(sentenceRaw) {
         const filename = createTTSFilename(sentenceRaw);
         downloadLink.download = filename;
         
-        // Drag-&-Drop-Link für Anki
-        ttsDragContainer.innerHTML = "";
-        
-        const dragLink = document.createElement("a");
-        dragLink.href = objectUrl;
-        dragLink.textContent = "TTS nach Anki ziehen";
-        dragLink.className = "ttsDragLink";
-        dragLink.download = filename;
-        dragLink.draggable = true;
-        
-        ttsDragContainer.appendChild(dragLink);
-        
         downloadLink.style.display = "inline-block";
         ttsStatus.textContent = "TTS erfolgreich erzeugt.";
         
@@ -110,6 +97,5 @@ export async function generateTTS(sentenceRaw) {
 
 export function hideTTSLinks() {
     downloadLink.style.display = "none";
-    ttsDragContainer.innerHTML = "";
     ttsStatus.textContent = "";
 }

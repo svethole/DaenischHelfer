@@ -142,13 +142,6 @@ textarea {
 }
 
 /* --- Spezielle Button-Styles --- */
-.btn-drag {
-    cursor: grab;
-}
-
-.btn-drag:active {
-    cursor: grabbing;
-}
 
 .btn-ghost {
     background: transparent;
@@ -284,7 +277,7 @@ textarea {
     filter: brightness(0) invert(1);
 }
 
-/* --- Download- und Drag-Links --- */
+/* --- Download-Link --- */
 .downloadButton {
     margin-top: var(--spacing-lg);
 }
