@@ -12,18 +12,64 @@ import {
     deleteHistoryEntry,
     updateHistoryVisibility
 } from "./history.js";
+import {
+    getActiveLang,
+    setActiveLang,
+    getAllLangs,
+    getProcessedUrls,
+    getLangConfig
+} from "./config.js";
 
+
+// ======================================
+// Sprach-Dropdown initialisieren
+// ======================================
+
+function initLanguageSelector() {
+    const selector = document.getElementById("languageSelector");
+    if (!selector) return;
+    
+    const langs = getAllLangs();
+    const activeLang = getActiveLang();
+    
+    selector.innerHTML = "";
+    
+    langs.forEach(lang => {
+        const option = document.createElement("option");
+        option.value = lang.code;
+        option.textContent = `${lang.flag} ${lang.name}`;
+        option.selected = lang.code === activeLang;
+        selector.appendChild(option);
+    });
+    
+    selector.addEventListener("change", (event) => {
+        setActiveLang(event.target.value);
+        validateForm();
+        updatePreview();
+        loadHistory(validateForm, updatePreview);
+        
+        // Seitentitel aktualisieren
+        updatePageTitle();
+    });
+}
+
+function updatePageTitle() {
+    const lang = getLangConfig();
+    if (lang) {
+        document.title = `Anki-Helfer ${lang.name}`;
+        const h1 = document.querySelector("h1");
+        if (h1) {
+            h1.textContent = `Anki-Helfer ${lang.flag} ${lang.name}`;
+        }
+    }
+}
 
 // ======================================
 // Lokale Puffer für sentence / word
-// (aus localStorage laden)
 // ======================================
 
-DOM.sentenceField.value =
-localStorage.getItem("anki_sentence") || "";
-
-DOM.wordField.value =
-localStorage.getItem("anki_word") || "";
+DOM.sentenceField.value = localStorage.getItem("anki_sentence") || "";
+DOM.wordField.value = localStorage.getItem("anki_word") || "";
 
 
 // ======================================
@@ -42,8 +88,8 @@ DOM.sentenceField.addEventListener("dblclick", () => {
     const start = DOM.sentenceField.selectionStart;
     const end   = DOM.sentenceField.selectionEnd;
     const selectedText = DOM.sentenceField.value
-    .substring(start, end)
-    .trim();
+        .substring(start, end)
+        .trim();
 
     if (selectedText.length > 0) {
         DOM.wordField.value = selectedText;
@@ -110,8 +156,8 @@ DOM.form.addEventListener("submit", function (event) {
     const sentenceRaw = DOM.sentenceField.value.trim();
     const wordRaw     = DOM.wordField.value.trim();
 
-    // Im Verlauf speichern
-    saveToHistory(sentenceRaw, wordRaw, validateForm, updatePreview);
+    // Im Verlauf speichern (mit aktuellem Sprach-Code)
+    saveToHistory(sentenceRaw, wordRaw, getActiveLang(), validateForm, updatePreview);
 
     // TTS generieren, falls Checkbox aktiv
     if (DOM.enableTTS.checked) {
@@ -120,18 +166,8 @@ DOM.form.addEventListener("submit", function (event) {
         hideTTSLinks();
     }
 
-    // URLs in neuem Tab öffnen
-    const sentence = encodeURIComponent(sentenceRaw);
-    const word     = encodeURIComponent(wordRaw);
-
-    const urls = [
-        `https://www.deepl.com/translator#da/de/${sentence}`,
-        `https://ordnet.dk/ddo/ordbog?query=${word}`,
-        `https://de.langenscheidt.com/daenisch-deutsch/${word}`,
-        `https://forvo.com/search/${word}/da/`,
-        `https://www.google.com/search?tbm=isch&q=${word}`
-    ];
-
+    // URLs aus Konfiguration holen und öffnen
+    const urls = getProcessedUrls(sentenceRaw, wordRaw);
     urls.forEach(url => window.open(url, "_blank"));
 });
 
@@ -140,6 +176,8 @@ DOM.form.addEventListener("submit", function (event) {
 // Initialisierung
 // ======================================
 
+initLanguageSelector();
+updatePageTitle();
 validateForm();
 updatePreview();
 loadHistory(validateForm, updatePreview);

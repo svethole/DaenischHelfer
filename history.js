@@ -5,6 +5,8 @@ import {
     toggleHistoryButton
 } from "./dom.js";
 
+import { getLangConfig } from "./config.js";
+
 export function loadHistory(
     validateForm,
     updatePreview
@@ -26,11 +28,15 @@ export function loadHistory(
 
         item.className = "historyItem";
 
+        // Sprach-Flag für den Eintrag (falls vorhanden)
+        const langConfig = getLangConfig(entry.lang);
+        const flag = langConfig ? langConfig.flag : "";
+
         item.innerHTML = `
         <div class="historyContent">
 
         <div class="historySentence">
-        ${entry.sentence}
+        ${flag ? flag + " " : ""}${entry.sentence}
         </div>
 
         <div class="historyWord">
@@ -95,6 +101,7 @@ export function loadHistory(
 export function saveToHistory(
     sentence,
     word,
+    lang,
     validateForm,
     updatePreview
 ) {
@@ -109,6 +116,7 @@ export function saveToHistory(
     history.unshift({
         sentence,
         word,
+        lang,
         timestamp:
         new Date()
         .toLocaleString("de-DE")
