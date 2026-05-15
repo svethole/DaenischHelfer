@@ -19,6 +19,7 @@ import {
     getProcessedUrls,
     getLangConfig
 } from "./config.js";
+import { getCachedAudio, cacheAudio, getCacheStats } from "./tts-cache.js";
 
 
 // ======================================
@@ -47,8 +48,6 @@ function initLanguageSelector() {
         validateForm();
         updatePreview();
         loadHistory(validateForm, updatePreview);
-        
-        // Seitentitel aktualisieren
         updatePageTitle();
     });
 }
@@ -63,6 +62,7 @@ function updatePageTitle() {
         }
     }
 }
+
 
 // ======================================
 // Lokale Puffer für sentence / word
@@ -149,19 +149,45 @@ DOM.enableTTS.addEventListener("change", () => {
     }
 });
 
-// Formular absenden
-DOM.form.addEventListener("submit", function (event) {
+// Formular absenden (MIT CACHE-LOGIK)
+DOM.form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const sentenceRaw = DOM.sentenceField.value.trim();
     const wordRaw     = DOM.wordField.value.trim();
 
+    if (!sentenceRaw || !wordRaw) return;
+
     // Im Verlauf speichern (mit aktuellem Sprach-Code)
     saveToHistory(sentenceRaw, wordRaw, getActiveLang(), validateForm, updatePreview);
 
-    // TTS generieren, falls Checkbox aktiv
+    // Cache-Key: sprachcode + satz (einfach und eindeutig)
+    const cacheId = `${getActiveLang()}_${sentenceRaw}`;
+    
+    // TTS generieren oder aus Cache laden
     if (DOM.enableTTS.checked) {
-        generateTTS(sentenceRaw);
+        DOM.ttsStatus.textContent = "Prüfe Cache ...";
+        
+        // 1. Cache prüfen
+        const cachedUrl = await getCachedAudio(cacheId);
+        
+        if (cachedUrl) {
+            // Aus Cache verwenden
+            DOM.downloadLink.href = cachedUrl;
+            DOM.downloadLink.download = createTTSFilename(sentenceRaw);
+            DOM.downloadLink.style.display = "inline-block";
+            DOM.ttsStatus.textContent = "✅ TTS aus Cache geladen.";
+            console.log("📦 Cache-Treffer:", cacheId);
+        } else {
+            // 2. Neu generieren
+            const audioBlob = await generateTTS(sentenceRaw);
+            
+            // 3. In Cache speichern
+            if (audioBlob) {
+                await cacheAudio(cacheId, audioBlob);
+                console.log("💾 Audio gecacht:", cacheId);
+            }
+        }
     } else {
         hideTTSLinks();
     }
@@ -170,6 +196,16 @@ DOM.form.addEventListener("submit", function (event) {
     const urls = getProcessedUrls(sentenceRaw, wordRaw);
     urls.forEach(url => window.open(url, "_blank"));
 });
+
+
+// ======================================
+// Cache-Info beim Start anzeigen (optional)
+// ======================================
+
+async function showCacheInfo() {
+    const stats = await getCacheStats();
+    console.log(`📦 TTS-Cache: ${stats.entries}/${stats.maxEntries} Einträge (${stats.totalSizeKB} KB)`);
+}
 
 
 // ======================================
@@ -182,3 +218,4 @@ validateForm();
 updatePreview();
 loadHistory(validateForm, updatePreview);
 updateHistoryVisibility();
+showCacheInfo();
