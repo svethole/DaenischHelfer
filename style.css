@@ -153,6 +153,19 @@ textarea {
     background: rgba(0,0,0,0.08);
 }
 
+/* --- Größen-Varianten --- */
+.btn-icon {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    font-size: var(--font-size-icon);
+}
+
+.btn-sm {
+    padding: var(--spacing-xs) 10px;
+    font-size: 13px;
+}
+
 /* ============================================================
  *  UTILITY-KLASSEN
  *  ============================================================ */

@@ -77,6 +77,8 @@
             <h2>Letzte Anfragen</h2>
 
             <div class="flex-center gap-sm">
+
+                <!-- Bestehende Buttons -->
                 <button type="button" id="toggleHistoryButton"
                         class="btn">
                     Letzte Anfragen verbergen
@@ -89,7 +91,26 @@
             </div>
         </div>
 
-        <div id="historyList"></div>
+        <div id="historyListContainer">
+            <div id="historyList"></div>
+            <div class="flex-center gap-sm">
+                <!-- Pagination-Buttons (NEU) -->
+                <button type="button" id="loadMoreButton"
+                        class="btn btn-sm">
+                    Nächste 10
+                </button>
+
+                <button type="button" id="showAllButton"
+                        class="btn btn-sm">
+                    Alle anzeigen
+                </button>
+
+                <button type="button" id="showDefaultButton"
+                        class="btn btn-sm" disabled>
+                    Standardansicht
+                </button>
+            </div>
+        </div>
 
     </div>
 

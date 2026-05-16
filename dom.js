@@ -31,6 +31,9 @@ document.getElementById("ttsStatus");
 export const historyList =
 document.getElementById("historyList");
 
+export const historyListContainer =
+document.getElementById("historyListContainer");
+
 export const clearHistoryButton =
 document.getElementById(
     "clearHistoryButton"
@@ -45,3 +48,13 @@ export const enableTTS =
 document.getElementById(
     "enableTTS"
 );
+
+// NEU: Pagination-Buttons
+export const loadMoreButton =
+document.getElementById("loadMoreButton");
+
+export const showAllButton =
+document.getElementById("showAllButton");
+
+export const showDefaultButton =
+document.getElementById("showDefaultButton");

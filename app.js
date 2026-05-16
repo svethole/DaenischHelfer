@@ -9,7 +9,10 @@ import { generateTTS } from "./tts.js";
 import {
     loadHistory,
     saveToHistory,
-    updateHistoryVisibility
+    updateHistoryVisibility,
+    loadMore,
+    showAll,
+    showDefault
 } from "./history.js";
 import {
     getActiveLang,
@@ -168,6 +171,22 @@ DOM.toggleHistoryButton.addEventListener("click", () => {
     const collapsed = localStorage.getItem("historyCollapsed") === "true";
     localStorage.setItem("historyCollapsed", (!collapsed).toString());
     updateHistoryVisibility();
+});
+
+// ======================================
+// Pagination-Buttons
+// ======================================
+
+DOM.loadMoreButton.addEventListener("click", () => {
+    loadMore(validateForm, updatePreview, onHistoryLanguageChange);
+});
+
+DOM.showAllButton.addEventListener("click", () => {
+    showAll(validateForm, updatePreview, onHistoryLanguageChange);
+});
+
+DOM.showDefaultButton.addEventListener("click", () => {
+    showDefault(validateForm, updatePreview, onHistoryLanguageChange);
 });
 
 // TTS-Checkbox
