@@ -97,8 +97,3 @@ export async function generateTTS(sentenceRaw) {
         return null;
     }
 }
-
-export function hideTTSLinks() {
-    downloadLink.style.display = "none";
-    ttsStatus.textContent = "";
-}

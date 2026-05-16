@@ -25,6 +25,7 @@ import {
     getCachedAudio,
     hasAudio
 } from "./tts-cache.js";
+import { escapeHtml, sanitizeFilename } from "./utils.js";
 
 // ======================================
 // Pagination-State
@@ -385,18 +386,4 @@ export function updateHistoryVisibility() {
         historyListContainer.classList.remove("historyCollapsed");
         toggleHistoryButton.textContent = "Letzte Anfragen verbergen";
     }
-}
-
-// ======================================
-// Hilfsfunktionen
-// ======================================
-
-function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function sanitizeFilename(text) {
-    return text.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
 }

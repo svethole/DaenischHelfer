@@ -3,7 +3,6 @@
 // ======================================
 
 import * as DOM from "./dom.js";
-import { escapeRegExp } from "./utils.js";
 import { updatePreview, validateForm, flashCopyButton } from "./ui.js";
 import { generateTTS } from "./tts.js";
 import {
@@ -27,7 +26,6 @@ import {
 } from "./config.js";
 import {
     cacheAudio,
-    hasAudio,
     clearAllHistory
 } from "./tts-cache.js";
 

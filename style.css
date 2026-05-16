@@ -128,29 +128,9 @@ textarea {
     background: var(--color-danger-hover);
 }
 
-/* --- Größen-Varianten --- */
-.btn-icon {
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    font-size: var(--font-size-icon);
-}
-
 .btn-block {
     display: flex;
     text-align: center;
-}
-
-/* --- Spezielle Button-Styles --- */
-
-.btn-ghost {
-    background: transparent;
-    color: inherit;
-    font-weight: normal;
-}
-
-.btn-ghost:hover {
-    background: rgba(0,0,0,0.08);
 }
 
 /* --- Größen-Varianten --- */

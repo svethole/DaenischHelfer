@@ -99,3 +99,13 @@ export function createTTSFilename(sentence) {
 
     return `${firstWords}_${timestamp}_${randomPart}.mp3`;
 }
+
+export function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+export function sanitizeFilename(text) {
+    return text.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
+}
