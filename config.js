@@ -1,5 +1,8 @@
 import { CONFIG } from "./api-config.js";
 
+// CONFIG für das Info-Overlay verfügbar machen
+export { CONFIG };
+
 // ======================================
 // Aktive Sprache verwalten
 // ======================================

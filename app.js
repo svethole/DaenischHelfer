@@ -28,6 +28,7 @@ import {
     cacheAudio,
     clearAllHistory
 } from "./tts-cache.js";
+import { createInfoOverlay } from "./info-overlay.js";
 
 
 // ======================================
@@ -274,6 +275,14 @@ DOM.form.addEventListener("submit", async function (event) {
 // Initialisierung
 // ======================================
 
+// ======================================
+// Info-Button
+// ======================================
+
+const infoButton = document.getElementById("infoButton");
+if (infoButton) {
+    infoButton.addEventListener("click", createInfoOverlay);
+}
 initPagination();
 setupPaginationButtons();
 initLanguageSelector();
