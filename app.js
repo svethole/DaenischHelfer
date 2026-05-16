@@ -10,9 +10,13 @@ import {
     loadHistory,
     saveToHistory,
     updateHistoryVisibility,
-    loadMore,
-    showAll,
-    showDefault
+    initPagination,
+    goToFirstPage,
+    goToPrevPage,
+    goToNextPage,
+    goToLastPage,
+    showAllEntries,
+    showDefaultView
 } from "./history.js";
 import {
     getActiveLang,
@@ -177,17 +181,31 @@ DOM.toggleHistoryButton.addEventListener("click", () => {
 // Pagination-Buttons
 // ======================================
 
-DOM.loadMoreButton.addEventListener("click", () => {
-    loadMore(validateForm, updatePreview, onHistoryLanguageChange);
-});
+function setupPaginationButtons() {
+    DOM.firstPageButton.addEventListener("click", () => {
+        goToFirstPage(validateForm, updatePreview, onHistoryLanguageChange);
+    });
 
-DOM.showAllButton.addEventListener("click", () => {
-    showAll(validateForm, updatePreview, onHistoryLanguageChange);
-});
+    DOM.prevPageButton.addEventListener("click", () => {
+        goToPrevPage(validateForm, updatePreview, onHistoryLanguageChange);
+    });
 
-DOM.showDefaultButton.addEventListener("click", () => {
-    showDefault(validateForm, updatePreview, onHistoryLanguageChange);
-});
+    DOM.nextPageButton.addEventListener("click", () => {
+        goToNextPage(validateForm, updatePreview, onHistoryLanguageChange);
+    });
+
+    DOM.lastPageButton.addEventListener("click", () => {
+        goToLastPage(validateForm, updatePreview, onHistoryLanguageChange);
+    });
+
+    DOM.showAllButton.addEventListener("click", () => {
+        showAllEntries();
+    });
+
+    DOM.showDefaultButton.addEventListener("click", () => {
+        showDefaultView(validateForm, updatePreview, onHistoryLanguageChange);
+    });
+}
 
 // TTS-Checkbox
 DOM.enableTTS.addEventListener("change", () => {
@@ -258,6 +276,8 @@ DOM.form.addEventListener("submit", async function (event) {
 // Initialisierung
 // ======================================
 
+initPagination();
+setupPaginationButtons();
 initLanguageSelector();
 updatePageTitle();
 validateForm();

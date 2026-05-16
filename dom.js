@@ -49,12 +49,14 @@ document.getElementById(
     "enableTTS"
 );
 
-// NEU: Pagination-Buttons
-export const loadMoreButton =
-document.getElementById("loadMoreButton");
-
-export const showAllButton =
-document.getElementById("showAllButton");
-
-export const showDefaultButton =
-document.getElementById("showDefaultButton");
+// Pagination
+export const firstPageButton = document.getElementById("firstPageButton");
+export const prevPageButton = document.getElementById("prevPageButton");
+export const nextPageButton = document.getElementById("nextPageButton");
+export const lastPageButton = document.getElementById("lastPageButton");
+export const showAllButton = document.getElementById("showAllButton");
+export const showDefaultButton = document.getElementById("showDefaultButton");
+export const pageSizeSelect = document.getElementById("pageSizeSelect");
+export const customPageSize = document.getElementById("customPageSize");
+export const pageSizeWarning = document.getElementById("pageSizeWarning");
+export const paginationInfo = document.getElementById("paginationInfo");

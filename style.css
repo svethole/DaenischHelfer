@@ -167,6 +167,40 @@ textarea {
 }
 
 /* ============================================================
+ *  PAGINATION
+ *  ============================================================ */
+.pagination-controls {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-md);
+}
+
+.pagination-select {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: 13px;
+    background: white;
+    cursor: pointer;
+    min-width: 60px;
+}
+
+.pagination-input {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: 13px;
+}
+
+.pagination-input.error {
+    border-color: var(--color-danger);
+}
+
+.text-danger {
+    color: var(--color-danger);
+}
+
+/* ============================================================
  *  UTILITY-KLASSEN
  *  ============================================================ */
 

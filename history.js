@@ -5,9 +5,16 @@ import {
     wordField,
     toggleHistoryButton,
     downloadLink,
-    loadMoreButton,
+    firstPageButton,
+    prevPageButton,
+    nextPageButton,
+    lastPageButton,
     showAllButton,
-    showDefaultButton
+    showDefaultButton,
+    pageSizeSelect,
+    customPageSize,
+    pageSizeWarning,
+    paginationInfo
 } from "./dom.js";
 
 import { getLangConfig } from "./config.js";
@@ -24,12 +31,88 @@ import {
 // ======================================
 
 const DEFAULT_PAGE_SIZE = 10;
-let currentOffset = 0;
+let currentPage = 0;
+let pageSize = DEFAULT_PAGE_SIZE;
 let allHistoryEntries = [];
 let isLoadingAll = false;
+let isCustomMode = false;
 
 // ======================================
-// History laden (mit Pagination)
+// Initialisierung
+// ======================================
+
+export function initPagination() {
+    // Event-Listener für Dropdown
+    pageSizeSelect.addEventListener("change", () => {
+        const value = pageSizeSelect.value;
+
+        if (value === "custom") {
+            // Benutzerdefiniert-Modus aktivieren
+            isCustomMode = true;
+            customPageSize.classList.remove("hidden");
+            customPageSize.focus();
+        } else if (value === "all") {
+            // Alle anzeigen
+            isCustomMode = false;
+            customPageSize.classList.add("hidden");
+            pageSizeWarning.classList.add("hidden");
+            showAllEntries();
+        } else {
+            // Feste Größe
+            isCustomMode = false;
+            customPageSize.classList.add("hidden");
+            pageSizeWarning.classList.add("hidden");
+            pageSize = parseInt(value);
+            currentPage = 0;
+            isLoadingAll = false;
+            renderCurrentPage();
+            updateAllButtonLabels();
+        }
+    });
+
+    // Event-Listener für benutzerdefinierte Eingabe
+    customPageSize.addEventListener("input", () => {
+        const value = customPageSize.value.trim();
+
+        if (value === "") {
+            pageSizeWarning.classList.add("hidden");
+            customPageSize.classList.remove("error");
+            return;
+        }
+
+        const num = parseInt(value);
+
+        if (isNaN(num) || num < 1) {
+            pageSizeWarning.classList.remove("hidden");
+            customPageSize.classList.add("error");
+        } else {
+            pageSizeWarning.classList.add("hidden");
+            customPageSize.classList.remove("error");
+            pageSize = Math.min(num, allHistoryEntries.length);
+            currentPage = 0;
+            isLoadingAll = false;
+            renderCurrentPage();
+            updateAllButtonLabels();
+        }
+    });
+
+    // Enter-Taste im Custom-Feld
+    customPageSize.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            const num = parseInt(customPageSize.value);
+            if (!isNaN(num) && num >= 1) {
+                pageSize = Math.min(num, allHistoryEntries.length);
+                currentPage = 0;
+                isLoadingAll = false;
+                renderCurrentPage();
+                updateAllButtonLabels();
+            }
+        }
+    });
+}
+
+// ======================================
+// History laden
 // ======================================
 
 export async function loadHistory(
@@ -38,28 +121,31 @@ export async function loadHistory(
     onHistoryClick = null,
     resetPagination = true
 ) {
-    // Daten aus DB holen
     allHistoryEntries = await loadHistoryFromDB();
 
     if (resetPagination) {
-        currentOffset = 0;
+        currentPage = 0;
         isLoadingAll = false;
+        pageSize = parseInt(pageSizeSelect.value) || DEFAULT_PAGE_SIZE;
+        updateAllButtonLabels();
     }
 
-    renderHistory(validateForm, updatePreview, onHistoryClick);
+    renderCurrentPage(validateForm, updatePreview, onHistoryClick);
     updatePaginationButtons();
+    updatePaginationInfo();
 }
 
-function renderHistory(validateForm, updatePreview, onHistoryClick) {
+function renderCurrentPage(validateForm, updatePreview, onHistoryClick) {
     historyList.innerHTML = "";
 
-    // Welche Einträge anzeigen?
     let entriesToShow;
 
     if (isLoadingAll) {
         entriesToShow = allHistoryEntries;
     } else {
-        entriesToShow = allHistoryEntries.slice(0, currentOffset + DEFAULT_PAGE_SIZE);
+        const start = currentPage * pageSize;
+        const end = start + pageSize;
+        entriesToShow = allHistoryEntries.slice(start, end);
     }
 
     if (entriesToShow.length === 0) {
@@ -101,10 +187,8 @@ function renderHistory(validateForm, updatePreview, onHistoryClick) {
             updatePreview();
             sentenceField.focus();
 
-            // Download-Button für diesen Eintrag aktualisieren
             await updateDownloadButton(entry.id, entry.sentence);
 
-            // Callback für Sprach-Update
             if (onHistoryClick) {
                 onHistoryClick(entry.lang);
             }
@@ -120,59 +204,136 @@ function renderHistory(validateForm, updatePreview, onHistoryClick) {
 }
 
 // ======================================
-// Pagination-Buttons aktualisieren
+// Button-Labels aktualisieren
+// ======================================
+
+function updateAllButtonLabels() {
+    const label = isLoadingAll ? "Alle" : pageSize;
+    const labels = document.querySelectorAll(".page-size-label");
+    labels.forEach(el => {
+        el.textContent = label;
+    });
+
+    // Nächste-Seite-Button: dynamische Anzahl
+    if (!isLoadingAll) {
+        const start = (currentPage + 1) * pageSize;
+        const remaining = allHistoryEntries.length - start;
+        const nextCount = Math.min(pageSize, Math.max(0, remaining));
+        nextPageButton.querySelector(".page-size-label").textContent = nextCount || pageSize;
+    }
+}
+
+// ======================================
+// Button-Zustände aktualisieren
 // ======================================
 
 function updatePaginationButtons() {
     const total = allHistoryEntries.length;
-    const shown = isLoadingAll ? total : Math.min(currentOffset + DEFAULT_PAGE_SIZE, total);
-    const remaining = total - shown;
+    const totalPages = Math.ceil(total / pageSize);
+    const isFirstPage = currentPage === 0;
+    const isLastPage = currentPage >= totalPages - 1;
 
-    // "Nächste 10" Button
-    if (loadMoreButton) {
-        if (isLoadingAll || remaining <= 0) {
-            loadMoreButton.disabled = true;
-            loadMoreButton.textContent = "Nächste 10";
-        } else {
-            loadMoreButton.disabled = false;
-            const nextCount = Math.min(remaining, DEFAULT_PAGE_SIZE);
-            loadMoreButton.textContent = `Nächste ${nextCount}`;
-        }
+    // << Erste
+    firstPageButton.disabled = isFirstPage || isLoadingAll || total === 0;
+
+    // < Vorige
+    prevPageButton.disabled = isFirstPage || isLoadingAll || total === 0;
+
+    // Nächste >
+    nextPageButton.disabled = isLastPage || isLoadingAll || total === 0;
+
+    // Letzte >>
+    lastPageButton.disabled = isLastPage || isLoadingAll || total === 0;
+
+    // Alle anzeigen
+    showAllButton.disabled = isLoadingAll || total <= pageSize;
+
+    // Standardansicht
+    const isDefaultView = !isLoadingAll && currentPage === 0 && pageSize === DEFAULT_PAGE_SIZE;
+    showDefaultButton.disabled = isDefaultView || total === 0;
+}
+
+function updatePaginationInfo() {
+    if (!paginationInfo) return;
+
+    const total = allHistoryEntries.length;
+
+    if (total === 0) {
+        paginationInfo.textContent = "Keine Einträge";
+        return;
     }
 
-    // "Alle anzeigen" Button
-    if (showAllButton) {
-        showAllButton.disabled = isLoadingAll || total <= DEFAULT_PAGE_SIZE;
+    if (isLoadingAll) {
+        paginationInfo.textContent = `Alle ${total} Einträge`;
+        return;
     }
 
-    // "Standardansicht" Button
-    if (showDefaultButton) {
-        // Deaktiviert, wenn: nur Standardansicht aktiv oder total <= 10
-        const isDefaultView = !isLoadingAll && currentOffset === 0;
-        showDefaultButton.disabled = isDefaultView || total <= DEFAULT_PAGE_SIZE;
-    }
+    const start = currentPage * pageSize + 1;
+    const end = Math.min(start + pageSize - 1, total);
+    paginationInfo.textContent = `Zeige ${start}–${end} von ${total} Einträgen`;
 }
 
 // ======================================
 // Pagination-Aktionen
 // ======================================
 
-export async function loadMore(validateForm, updatePreview, onHistoryClick) {
-    if (isLoadingAll) return;
-
-    currentOffset += DEFAULT_PAGE_SIZE;
-    await loadHistory(validateForm, updatePreview, onHistoryClick, false);
-}
-
-export async function showAll(validateForm, updatePreview, onHistoryClick) {
-    isLoadingAll = true;
-    currentOffset = 0;
-    await loadHistory(validateForm, updatePreview, onHistoryClick, false);
-}
-
-export async function showDefault(validateForm, updatePreview, onHistoryClick) {
+export async function goToFirstPage(validateForm, updatePreview, onHistoryClick) {
+    currentPage = 0;
     isLoadingAll = false;
-    currentOffset = 0;
+    await loadHistory(validateForm, updatePreview, onHistoryClick, false);
+}
+
+export async function goToPrevPage(validateForm, updatePreview, onHistoryClick) {
+    if (currentPage > 0) {
+        currentPage--;
+        isLoadingAll = false;
+        await loadHistory(validateForm, updatePreview, onHistoryClick, false);
+    }
+}
+
+export async function goToNextPage(validateForm, updatePreview, onHistoryClick) {
+    const totalPages = Math.ceil(allHistoryEntries.length / pageSize);
+    if (currentPage < totalPages - 1) {
+        currentPage++;
+        isLoadingAll = false;
+        await loadHistory(validateForm, updatePreview, onHistoryClick, false);
+    }
+}
+
+export async function goToLastPage(validateForm, updatePreview, onHistoryClick) {
+    const totalPages = Math.ceil(allHistoryEntries.length / pageSize);
+    currentPage = Math.max(0, totalPages - 1);
+    isLoadingAll = false;
+    await loadHistory(validateForm, updatePreview, onHistoryClick, false);
+}
+
+export async function showAllEntries() {
+    isLoadingAll = true;
+    currentPage = 0;
+
+    // Dropdown auf "Alle" setzen
+    pageSizeSelect.value = "all";
+    customPageSize.classList.add("hidden");
+    pageSizeWarning.classList.add("hidden");
+    isCustomMode = false;
+
+    updateAllButtonLabels();
+    renderCurrentPage();
+    updatePaginationButtons();
+    updatePaginationInfo();
+}
+
+export async function showDefaultView(validateForm, updatePreview, onHistoryClick) {
+    isLoadingAll = false;
+    currentPage = 0;
+    pageSize = DEFAULT_PAGE_SIZE;
+
+    // Dropdown zurücksetzen
+    pageSizeSelect.value = DEFAULT_PAGE_SIZE;
+    customPageSize.classList.add("hidden");
+    pageSizeWarning.classList.add("hidden");
+    isCustomMode = false;
+
     await loadHistory(validateForm, updatePreview, onHistoryClick, false);
 }
 
