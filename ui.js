@@ -45,17 +45,11 @@ export function validateForm() {
 }
 
 export function flashCopyButton(button) {
+    // Pulsier-Effekt
+    button.classList.add("copy-flash");
 
-    const originalBackground =
-    button.style.background;
-
-    button.style.background =
-    "#2e7d32";
-
-setTimeout(() => {
-
-    button.style.background =
-    originalBackground;
-
-}, 500);
+    // Nach der Animation wieder entfernen
+    setTimeout(() => {
+        button.classList.remove("copy-flash");
+    }, 500);
 }

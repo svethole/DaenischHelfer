@@ -146,6 +146,26 @@ textarea {
     font-size: 13px;
 }
 
+/* --- Copy-Button Puls-Effekt --- */
+.copy-flash {
+    animation: copyPulse 0.5s ease;
+}
+
+@keyframes copyPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.6);
+    }
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 12px rgba(67, 160, 71, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(67, 160, 71, 0);
+    }
+}
+
 /* ============================================================
  *  PAGINATION
  *  ============================================================ */
