@@ -26,7 +26,8 @@ import {
 } from "./config.js";
 import {
     cacheAudio,
-    clearAllHistory
+    clearAllHistory,
+    loadHistory as loadHistoryFromDB
 } from "./tts-cache.js";
 import { createInfoOverlay } from "./info-overlay.js";
 import { initAudioPlayer, resetPlayer } from "./audio-player.js";
@@ -241,13 +242,16 @@ DOM.form.addEventListener("submit", async function (event) {
             await saveToHistory(sentenceRaw, wordRaw, currentLang, validateForm, updatePreview);
             
             // Jetzt die echte ID aus der DB holen und Audio speichern
-            const { loadHistory } = await import("./tts-cache.js");
-            const history = await loadHistory();
+            const history = await loadHistoryFromDB();
             const lastEntry = history[0]; // Neuester Eintrag
             
             if (lastEntry) {
                 await cacheAudio(lastEntry.id, audioBlob);
                 audioGenerated = true;
+
+                // Player automatisch laden
+                const { loadAudioForHistory } = await import("./audio-player.js");
+                await loadAudioForHistory(lastEntry.id, sentenceRaw);
             }
         }
     } else {
