@@ -242,7 +242,7 @@ DOM.form.addEventListener("submit", async function (event) {
             await saveToHistory(sentenceRaw, wordRaw, currentLang, validateForm, updatePreview);
             
             // Jetzt die echte ID aus der DB holen und Audio speichern
-            const history = await loadHistoryFromDB();
+            const history = await loadHistoryFromDB(validateForm, updatePreview);
             const lastEntry = history[0]; // Neuester Eintrag
             
             if (lastEntry) {

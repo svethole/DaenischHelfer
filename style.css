@@ -386,6 +386,16 @@ textarea {
     background: var(--color-bg-history-hover);
 }
 
+.historyIndex {
+    font-size: 12px;
+    font-weight: bold;
+    color: #999;
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+    user-select: none;
+}
+
 .historyContent {
     flex: 1;
 }

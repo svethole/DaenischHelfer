@@ -155,14 +155,20 @@ function renderCurrentPage(validateForm, updatePreview, onHistoryClick) {
         return;
     }
 
-    entriesToShow.forEach((entry) => {
+    entriesToShow.forEach((entry, arrayIndex) => {
         const item = document.createElement("div");
         item.className = "historyItem";
 
         const langConfig = getLangConfig(entry.lang);
         const flag = langConfig ? langConfig.flag : "";
 
+        // Zähler berechnen (globale Position)
+        const globalIndex = isLoadingAll
+            ? arrayIndex + 1
+            : (currentPage * pageSize) + arrayIndex + 1;
+
         item.innerHTML = `
+        <span class="historyIndex">${globalIndex}</span>
         <div class="historyContent">
         <div class="historySentence">
         ${flag ? flag + " " : ""}${escapeHtml(entry.sentence)}
