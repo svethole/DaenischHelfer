@@ -26,6 +26,7 @@ import {
     hasAudio
 } from "./tts-cache.js";
 import { escapeHtml, sanitizeFilename } from "./utils.js";
+import { loadAudioForHistory } from "./audio-player.js";
 
 // ======================================
 // Pagination-State
@@ -351,10 +352,17 @@ async function updateDownloadButton(historyId, sentence) {
             downloadLink.href = audioUrl;
             downloadLink.download = `tts_${sanitizeFilename(sentence)}.mp3`;
             downloadLink.style.display = "inline-block";
+
+            // Audio-Player laden
+            await loadAudioForHistory(historyId);
         }
     } else {
         downloadLink.style.display = "none";
         downloadLink.href = "#";
+
+        // Player verstecken
+        const { resetPlayer } = await import("./audio-player.js");
+        resetPlayer();
     }
 }
 

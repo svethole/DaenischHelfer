@@ -80,6 +80,34 @@
         TTS downloaden
     </a>
 
+        <a id="downloadLink"
+       class="btn mt-lg hidden"
+       download="dansk_tts.mp3">
+        TTS downloaden
+    </a>
+
+    <!-- Audio-Player -->
+    <div id="audioPlayerContainer" class="audio-player hidden mt-lg">
+        <div class="audio-player-inner">
+            <button type="button" id="playPauseButton" class="btn btn-icon btn-play" title="Abspielen">
+                ▶️
+            </button>
+
+            <div class="audio-progress-container">
+                <div id="audioProgressBar" class="audio-progress-bar"></div>
+                <input type="range" id="audioSeekBar" class="audio-seek" min="0" max="100" value="0" step="0.1">
+            </div>
+
+            <span id="audioCurrentTime" class="audio-time">0:00</span>
+            <span class="audio-time-separator">/</span>
+            <span id="audioDuration" class="audio-time">0:00</span>
+
+            <button type="button" id="stopButton" class="btn btn-sm btn-danger" title="Stop">
+                ⏹
+            </button>
+        </div>
+    </div>
+
     <div class="historySection mt-3xl">
 
     <div class="flex-between mb-md">

@@ -29,6 +29,8 @@ import {
     clearAllHistory
 } from "./tts-cache.js";
 import { createInfoOverlay } from "./info-overlay.js";
+import { initAudioPlayer, resetPlayer } from "./audio-player.js";
+
 
 
 // ======================================
@@ -91,6 +93,7 @@ function onHistoryLanguageChange(langCode) {
 function hideDownloadButton() {
     DOM.downloadLink.style.display = "none";
     DOM.downloadLink.href = "#";
+    resetPlayer();
 }
 
 // ======================================
@@ -292,3 +295,4 @@ updatePreview();
 loadHistory(validateForm, updatePreview, onHistoryLanguageChange);
 updateHistoryVisibility();
 hideDownloadButton();
+initAudioPlayer();
