@@ -91,8 +91,6 @@ function onHistoryLanguageChange(langCode) {
 // ======================================
 
 function hideDownloadButton() {
-    DOM.downloadLink.style.display = "none";
-    DOM.downloadLink.href = "#";
     resetPlayer();
 }
 

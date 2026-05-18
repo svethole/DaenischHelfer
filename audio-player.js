@@ -1,4 +1,5 @@
 import { getCachedAudio } from "./tts-cache.js";
+import { createTTSFilename } from "./utils.js";
 
 // ======================================
 // Audio-Player State
@@ -8,13 +9,15 @@ let audio = null;
 let currentHistoryId = null;
 let isPlaying = false;
 
-// DOM-Referenzen (werden bei Init gesetzt)
+// DOM-Referenzen
 let playPauseButton = null;
 let stopButton = null;
 let seekBar = null;
 let currentTimeDisplay = null;
 let durationDisplay = null;
 let playerContainer = null;
+let playerDownloadLink = null;
+let mainDownloadLink = null;
 
 // ======================================
 // Player initialisieren
@@ -27,6 +30,8 @@ export function initAudioPlayer() {
     currentTimeDisplay = document.getElementById("audioCurrentTime");
     durationDisplay = document.getElementById("audioDuration");
     playerContainer = document.getElementById("audioPlayerContainer");
+    playerDownloadLink = document.getElementById("playerDownloadLink");
+    mainDownloadLink = document.getElementById("downloadLink");
 
     if (!playPauseButton) return;
 
@@ -40,7 +45,7 @@ export function initAudioPlayer() {
 // Audio für einen History-Eintrag laden
 // ======================================
 
-export async function loadAudioForHistory(historyId) {
+export async function loadAudioForHistory(historyId, sentence) {
     // Wenn dasselbe Audio bereits geladen ist, nichts tun
     if (currentHistoryId === historyId && audio) {
         return;
@@ -85,6 +90,19 @@ export async function loadAudioForHistory(historyId) {
             console.error("Audio-Fehler");
             destroyAudio();
         });
+
+        // Download-Links setzen – mit dynamischem Dateinamen
+        const filename = createTTSFilename(sentence || "audio");
+
+        if (playerDownloadLink) {
+            playerDownloadLink.href = audioUrl;
+            playerDownloadLink.download = filename;
+        }
+
+        if (mainDownloadLink) {
+            mainDownloadLink.href = audioUrl;
+            mainDownloadLink.download = filename;
+        }
 
         currentHistoryId = historyId;
 
@@ -131,7 +149,7 @@ function seek() {
 }
 
 function updatePlayButton() {
-    if (!playPauseButton) return; // Guard: Button noch nicht initialisiert
+    if (!playPauseButton) return;
 
     if (isPlaying) {
         playPauseButton.textContent = "⏸️";
@@ -162,7 +180,6 @@ function destroyAudio() {
     currentHistoryId = null;
     isPlaying = false;
 
-    // updatePlayButton nur aufrufen, wenn Buttons bereits initialisiert sind
     if (playPauseButton) {
         updatePlayButton();
     }
@@ -170,10 +187,15 @@ function destroyAudio() {
     if (seekBar) seekBar.value = 0;
     if (currentTimeDisplay) currentTimeDisplay.textContent = "0:00";
     if (durationDisplay) durationDisplay.textContent = "0:00";
+    if (playerDownloadLink) playerDownloadLink.href = "#";
+    if (mainDownloadLink) {
+        mainDownloadLink.href = "#";
+        mainDownloadLink.style.display = "none";
+    }
 }
 
 // ======================================
-// Hilfsfunktion: Zeit formatieren
+// Hilfsfunktionen
 // ======================================
 
 function formatTime(seconds) {

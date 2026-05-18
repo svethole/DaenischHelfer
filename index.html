@@ -75,15 +75,9 @@
     <div id="ttsStatus" class="loading mt-md"></div>
 
     <a id="downloadLink"
-       class="btn mt-lg hidden"
-       href="dansk_tts.mp3">
-        TTS downloaden
-    </a>
-
-        <a id="downloadLink"
-       class="btn mt-lg hidden"
-       download="dansk_tts.mp3">
-        TTS downloaden
+       class="hidden"
+       download="dansk_tts.mp3"
+       style="display: none;">
     </a>
 
     <!-- Audio-Player -->
@@ -101,6 +95,13 @@
             <span id="audioCurrentTime" class="audio-time">0:00</span>
             <span class="audio-time-separator">/</span>
             <span id="audioDuration" class="audio-time">0:00</span>
+
+            <a id="playerDownloadLink"
+               class="btn btn-icon btn-download"
+               title="TTS herunterladen"
+               download="">
+                ⬇️
+            </a>
 
             <button type="button" id="stopButton" class="btn btn-sm btn-danger" title="Stop">
                 ⏹
