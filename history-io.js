@@ -1,4 +1,9 @@
-import { loadHistory as loadHistoryFromDB, saveToHistory as saveToHistoryToDB, getCachedAudio, hasAudio } from "./tts-cache.js";
+import {
+    loadHistory as loadHistoryFromDB,
+    saveToHistory as saveToHistoryToDB,
+    getCachedAudio,
+    hasAudio,
+} from "./tts-cache.js";
 import { loadHistory } from "./history.js";
 import { clearAllHistory } from "./tts-cache.js";
 
@@ -29,10 +34,10 @@ export async function exportHistory() {
                     word: entry.word,
                     lang: entry.lang,
                     timestamp: entry.timestamp,
-                    displayTimestamp: entry.displayTimestamp
+                    displayTimestamp: entry.displayTimestamp,
                 },
                 hasAudio: !!audioBlob,
-                audioBlob: audioBlob
+                audioBlob: audioBlob,
             });
         }
 
@@ -41,10 +46,10 @@ export async function exportHistory() {
             version: 1,
             exportedAt: new Date().toISOString(),
             entryCount: entriesWithAudio.length,
-            entries: entriesWithAudio.map(e => ({
+            entries: entriesWithAudio.map((e) => ({
                 ...e.entry,
-                _hasAudio: e.hasAudio  // Marker für den Import
-            }))
+                _hasAudio: e.hasAudio, // Marker für den Import
+            })),
         };
 
         // ZIP erstellen
@@ -61,11 +66,12 @@ export async function exportHistory() {
         for (const item of entriesWithAudio) {
             if (item.audioBlob) {
                 // Dateiname: ID + Satzanfang (für Lesbarkeit)
-                const safeName = item.entry.sentence
-                .replace(/[^a-zA-Z0-9æøåäöüß ]/g, "")
-                .trim()
-                .substring(0, 30)
-                .replace(/\s+/g, "_") || "audio";
+                const safeName =
+                    item.entry.sentence
+                        .replace(/[^a-zA-Z0-9æøåäöüß ]/g, "")
+                        .trim()
+                        .substring(0, 30)
+                        .replace(/\s+/g, "_") || "audio";
 
                 const filename = `${item.entry.timestamp}_${safeName}.mp3`;
                 audioFolder.file(filename, item.audioBlob);
@@ -77,7 +83,7 @@ export async function exportHistory() {
         const zipBlob = await zip.generateAsync({
             type: "blob",
             compression: "DEFLATE",
-            compressionOptions: { level: 9 }
+            compressionOptions: { level: 9 },
         });
 
         const url = URL.createObjectURL(zipBlob);
@@ -97,11 +103,15 @@ export async function exportHistory() {
         // Statistik
         const jsonSize = (new Blob([jsonString]).size / 1024).toFixed(1);
         const zipSize = (zipBlob.size / 1024).toFixed(1);
-        const reduction = ((1 - zipBlob.size / (new Blob([jsonString]).size + audioCount * 100 * 1024)) * 100).toFixed(0);
+        const reduction = (
+            (1 - zipBlob.size / (new Blob([jsonString]).size + audioCount * 100 * 1024)) *
+            100
+        ).toFixed(0);
 
-        console.log(`📤 Exportiert: ${entriesWithAudio.length} Einträge, ${audioCount} Audio-Dateien`);
+        console.log(
+            `📤 Exportiert: ${entriesWithAudio.length} Einträge, ${audioCount} Audio-Dateien`
+        );
         console.log(`   ZIP-Größe: ${zipSize} KB`);
-
     } catch (error) {
         console.error("Fehler beim Exportieren:", error);
         alert("Fehler beim Exportieren der History.");
@@ -137,7 +147,7 @@ export async function importHistory(file, validateForm, updatePreview, onHistory
         }
 
         let importData;
-        let audioFiles = {};  // Map: timestamp_safename.mp3 → Blob
+        let audioFiles = {}; // Map: timestamp_safename.mp3 → Blob
 
         if (filename.endsWith(".zip")) {
             // ZIP extrahieren
@@ -155,8 +165,8 @@ export async function importHistory(file, validateForm, updatePreview, onHistory
             // Audio-Dateien extrahieren
             const audioFolder = zip.folder("audio");
             if (audioFolder) {
-                const audioFileNames = Object.keys(zip.files).filter(name =>
-                name.startsWith("audio/") && !name.endsWith("/")
+                const audioFileNames = Object.keys(zip.files).filter(
+                    (name) => name.startsWith("audio/") && !name.endsWith("/")
                 );
 
                 for (const name of audioFileNames) {
@@ -184,15 +194,16 @@ export async function importHistory(file, validateForm, updatePreview, onHistory
         }
 
         // Bestätigung
-        const audioInfo = Object.keys(audioFiles).length > 0
-        ? ` (inkl. ${Object.keys(audioFiles).length} Audio-Dateien)`
-        : "";
+        const audioInfo =
+            Object.keys(audioFiles).length > 0
+                ? ` (inkl. ${Object.keys(audioFiles).length} Audio-Dateien)`
+                : "";
 
         const action = confirm(
             `Möchtest du die importierten Einträge...\n\n` +
-            `• Mit "OK" zur bestehenden History hinzufügen\n` +
-            `• Mit "Abbrechen" die bestehende History ersetzen?\n\n` +
-            `${importData.entries.length} Einträge${audioInfo} in der Import-Datei.`
+                `• Mit "OK" zur bestehenden History hinzufügen\n` +
+                `• Mit "Abbrechen" die bestehende History ersetzen?\n\n` +
+                `${importData.entries.length} Einträge${audioInfo} in der Import-Datei.`
         );
 
         if (!action) {
@@ -211,8 +222,8 @@ export async function importHistory(file, validateForm, updatePreview, onHistory
                     entry.sentence,
                     entry.word,
                     entry.lang,
-                    entry.timestamp,           // ← Original-Timestamp
-                    entry.displayTimestamp     // ← Original-Anzeige-Timestamp
+                    entry.timestamp, // ← Original-Timestamp
+                    entry.displayTimestamp // ← Original-Anzeige-Timestamp
                 );
 
                 // Audio zuordnen (falls vorhanden)
@@ -228,11 +239,14 @@ export async function importHistory(file, validateForm, updatePreview, onHistory
             }
         }
 
-        console.log(`📥 ${importedCount} Einträge importiert, ${importedAudioCount} Audio-Dateien wiederhergestellt.`);
+        console.log(
+            `📥 ${importedCount} Einträge importiert, ${importedAudioCount} Audio-Dateien wiederhergestellt.`
+        );
         await loadHistory(validateForm, updatePreview, onHistoryClick);
 
-        alert(`${importedCount} Einträge erfolgreich importiert.\n${importedAudioCount} Audio-Dateien wiederhergestellt.`);
-
+        alert(
+            `${importedCount} Einträge erfolgreich importiert.\n${importedAudioCount} Audio-Dateien wiederhergestellt.`
+        );
     } catch (error) {
         console.error("Fehler beim Importieren:", error);
         alert("Fehler beim Importieren. Bitte stelle sicher, dass die Datei gültig ist.");
@@ -244,11 +258,12 @@ export async function importHistory(file, validateForm, updatePreview, onHistory
 // ======================================
 
 function findMatchingAudio(entry, audioFiles) {
-    const safeName = entry.sentence
-    .replace(/[^a-zA-Z0-9æøåäöüß ]/g, "")
-    .trim()
-    .substring(0, 30)
-    .replace(/\s+/g, "_") || "audio";
+    const safeName =
+        entry.sentence
+            .replace(/[^a-zA-Z0-9æøåäöüß ]/g, "")
+            .trim()
+            .substring(0, 30)
+            .replace(/\s+/g, "_") || "audio";
 
     const expectedName = `${entry.timestamp}_${safeName}.mp3`;
 
@@ -272,7 +287,13 @@ function findMatchingAudio(entry, audioFiles) {
 // (Original-Timestamps bleiben erhalten)
 // ======================================
 
-async function saveToHistoryWithReturn(sentence, word, lang, originalTimestamp, originalDisplayTimestamp) {
+async function saveToHistoryWithReturn(
+    sentence,
+    word,
+    lang,
+    originalTimestamp,
+    originalDisplayTimestamp
+) {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open("anki_data", 1);
 
@@ -286,7 +307,7 @@ async function saveToHistoryWithReturn(sentence, word, lang, originalTimestamp, 
                 word,
                 lang,
                 timestamp: originalTimestamp || Date.now(),
-                       displayTimestamp: originalDisplayTimestamp || new Date().toLocaleString("de-DE")
+                displayTimestamp: originalDisplayTimestamp || new Date().toLocaleString("de-DE"),
             };
 
             const addRequest = store.add(entry);
@@ -314,7 +335,7 @@ async function cacheAudioFromImport(historyId, blob) {
             const putRequest = store.put({
                 id: `audio_${historyId}`,
                 blob,
-                timestamp: Date.now()
+                timestamp: Date.now(),
             });
 
             putRequest.onsuccess = () => resolve();

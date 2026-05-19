@@ -14,7 +14,7 @@ import {
     pageSizeSelect,
     customPageSize,
     pageSizeWarning,
-    paginationInfo
+    paginationInfo,
 } from "./dom.js";
 
 import { getLangConfig } from "./config.js";
@@ -23,7 +23,7 @@ import {
     saveToHistory as saveToHistoryToDB,
     deleteHistoryEntry as deleteFromDB,
     getCachedAudio,
-    hasAudio
+    hasAudio,
 } from "./tts-cache.js";
 import { escapeHtml, sanitizeFilename } from "./utils.js";
 import { loadAudioForHistory } from "./audio-player.js";
@@ -151,7 +151,8 @@ function renderCurrentPage(validateForm, updatePreview, onHistoryClick) {
     }
 
     if (entriesToShow.length === 0) {
-        historyList.innerHTML = '<div class="text-muted text-center mt-md">Keine Einträge vorhanden</div>';
+        historyList.innerHTML =
+            '<div class="text-muted text-center mt-md">Keine Einträge vorhanden</div>';
         return;
     }
 
@@ -163,9 +164,7 @@ function renderCurrentPage(validateForm, updatePreview, onHistoryClick) {
         const flag = langConfig ? langConfig.flag : "";
 
         // Zähler berechnen (globale Position)
-        const globalIndex = isLoadingAll
-            ? arrayIndex + 1
-            : (currentPage * pageSize) + arrayIndex + 1;
+        const globalIndex = isLoadingAll ? arrayIndex + 1 : currentPage * pageSize + arrayIndex + 1;
 
         item.innerHTML = `
         <span class="historyIndex">${globalIndex}</span>
@@ -218,7 +217,7 @@ function renderCurrentPage(validateForm, updatePreview, onHistoryClick) {
 function updateAllButtonLabels() {
     const label = isLoadingAll ? "Alle" : pageSize;
     const labels = document.querySelectorAll(".page-size-label");
-    labels.forEach(el => {
+    labels.forEach((el) => {
         el.textContent = label;
     });
 

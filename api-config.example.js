@@ -13,15 +13,15 @@ export const CONFIG = {
 
     // Anki Connect Einstellungen (global)
     ankiConnect: {
-        enabled: true,  // false = Button komplett ausblenden
+        enabled: true, // false = Button komplett ausblenden
         port: 8765,
-        deckPrefix: "",  // Optional: Prefix für Deck-Namen (z.B. "Sprachen::")
-        modelPrefix: ""  // Optional: Prefix für Notiztyp-Namen
+        deckPrefix: "", // Optional: Prefix für Deck-Namen (z.B. "Sprachen::")
+        modelPrefix: "", // Optional: Prefix für Notiztyp-Namen
     },
 
     // Sprachdefinitionen
     langs: {
-        "da": {
+        da: {
             name: "Dänisch",
             flag: "🇩🇰",
             ttsModel: "speech-2.8-hd",
@@ -33,32 +33,32 @@ export const CONFIG = {
                 fields: {
                     sentence: "Sentence",
                     word: "Word",
-                    audio: "Audio"
-                }
+                    audio: "Audio",
+                },
             },
             urls: [
                 "https://www.deepl.com/translator#da/de/${sentence}",
                 "https://ordnet.dk/ddo/ordbog?query=${word}",
                 "https://de.langenscheidt.com/daenisch-deutsch/${word}",
                 "https://forvo.com/search/${word}/da/",
-                "https://www.google.com/search?tbm=isch&q=${word}"
-            ]
+                "https://www.google.com/search?tbm=isch&q=${word}",
+            ],
         },
-        "nl": {
+        nl: {
             name: "Niederländisch",
             flag: "🇳🇱",
             ttsModel: "speech-2.8-turbo",
             voiceId: "Dutch_bossy_leader",
             anki: {
-                enabled: false
+                enabled: false,
             },
             urls: [
                 "https://www.deepl.com/translator#nl/de/${sentence}",
                 "https://nl.wiktionary.org/wiki/${word}",
                 "https://de.langenscheidt.com/niederlaendisch-deutsch/${word}",
                 "https://forvo.com/search/${word}/nl/",
-                "https://www.google.com/search?tbm=isch&q=${word}"
-            ]
-        }
-    }
+                "https://www.google.com/search?tbm=isch&q=${word}",
+            ],
+        },
+    },
 };

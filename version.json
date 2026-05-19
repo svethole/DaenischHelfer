@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
-  "name": "Anki-Helfer",
-  "description": "Browserbasierter Helfer für Anki-Karteikarten"
+    "version": "1.0.0",
+    "name": "Anki-Helfer",
+    "description": "Browserbasierter Helfer für Anki-Karteikarten"
 }

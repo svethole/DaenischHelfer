@@ -33,7 +33,7 @@ export function getAllLangs() {
     return Object.entries(CONFIG.langs).map(([code, config]) => ({
         code,
         name: config.name,
-        flag: config.flag
+        flag: config.flag,
     }));
 }
 
@@ -52,10 +52,10 @@ export function getApiKey() {
 export function getTTSConfig(langCode = null) {
     const lang = getLangConfig(langCode);
     if (!lang) return null;
-    
+
     return {
         model: lang.ttsModel,
-        voiceId: lang.voiceId
+        voiceId: lang.voiceId,
     };
 }
 
@@ -66,14 +66,12 @@ export function getTTSConfig(langCode = null) {
 export function getProcessedUrls(sentence, word, langCode = null) {
     const lang = getLangConfig(langCode);
     if (!lang) return [];
-    
+
     const encodedSentence = encodeURIComponent(sentence);
     const encodedWord = encodeURIComponent(word);
-    
-    return lang.urls.map(url => {
-        return url
-            .replace(/\$\{sentence\}/g, encodedSentence)
-            .replace(/\$\{word\}/g, encodedWord);
+
+    return lang.urls.map((url) => {
+        return url.replace(/\$\{sentence\}/g, encodedSentence).replace(/\$\{word\}/g, encodedWord);
     });
 }
 
@@ -84,21 +82,21 @@ export function getProcessedUrls(sentence, word, langCode = null) {
 export function getAnkiConfig(langCode = null) {
     const lang = getLangConfig(langCode);
     if (!lang || !lang.anki) return null;
-    
+
     // Globale Einstellung: Anki komplett aus?
     if (CONFIG.ankiConnect && CONFIG.ankiConnect.enabled === false) return null;
-    
+
     // Sprachebene: Anki für diese Sprache deaktiviert?
     if (lang.anki.enabled === false) return null;
-    
+
     return {
         deck: lang.anki.deck,
         model: lang.anki.model,
         fields: {
             sentence: lang.anki.fields.sentence || "Sentence",
             word: lang.anki.fields.word || "Word",
-            audio: lang.anki.fields.audio || "Audio"
-        }
+            audio: lang.anki.fields.audio || "Audio",
+        },
     };
 }
 
@@ -110,16 +108,16 @@ export function isAnkiEnabled() {
 export function isAnkiEnabledForLang(langCode = null) {
     const code = langCode || activeLang;
     const lang = getLangConfig(code);
-    
+
     // Global aus?
     if (!isAnkiEnabled()) return false;
-    
+
     // Keine Anki-Konfiguration für diese Sprache?
     if (!lang || !lang.anki) return false;
-    
+
     // Explizit deaktiviert?
     if (lang.anki.enabled === false) return false;
-    
+
     return true;
 }
 

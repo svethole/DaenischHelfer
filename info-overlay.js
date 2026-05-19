@@ -95,8 +95,8 @@ async function loadOverlayContent() {
         const langStats = {};
         let totalEntries = 0;
 
-        langs.forEach(lang => {
-            const count = historyData.filter(e => e.lang === lang.code).length;
+        langs.forEach((lang) => {
+            const count = historyData.filter((e) => e.lang === lang.code).length;
             langStats[lang.code] = count;
             totalEntries += count;
         });
@@ -106,7 +106,7 @@ async function loadOverlayContent() {
 
         // API-Key maskieren
         const maskedKey = maskApiKey(apiConfig.apiKey);
-        
+
         const version = await getVersion();
 
         body.innerHTML = `
@@ -122,19 +122,23 @@ async function loadOverlayContent() {
         <div class="overlay-section">
         <h3>🌍 Konfiguration</h3>
         <div class="tree-container">
-        ${langs.map(lang => buildTreeHTML(lang.code, apiConfig.langs[lang.code])).join("")}
+        ${langs.map((lang) => buildTreeHTML(lang.code, apiConfig.langs[lang.code])).join("")}
         </div>
         </div>
 
         <div class="overlay-section">
         <h3>💾 Gespeicherte Einträge</h3>
         <div class="stats-container">
-        ${langs.map(lang => `
+        ${langs
+            .map(
+                (lang) => `
             <div class="stat-row">
             <span class="stat-lang">${lang.flag} ${lang.name}</span>
             <span class="stat-count">${langStats[lang.code] || 0}</span>
             </div>
-            `).join("")}
+            `
+            )
+            .join("")}
             <div class="stat-row stat-total">
             <span>Gesamt</span>
             <span class="stat-count">${totalEntries}</span>
@@ -180,12 +184,11 @@ async function loadOverlayContent() {
             </div>
             `;
 
-            // API-Key Klick-Handler
-            setupApiKeyToggle(apiConfig.apiKey);
+        // API-Key Klick-Handler
+        setupApiKeyToggle(apiConfig.apiKey);
 
-            // Tree-Toggle-Handler
-            setupTreeToggles();
-
+        // Tree-Toggle-Handler
+        setupTreeToggles();
     } catch (error) {
         console.error("Fehler beim Laden der Overlay-Daten:", error);
         body.innerHTML = '<div class="overlay-error">Fehler beim Laden der Informationen.</div>';
@@ -200,7 +203,7 @@ function buildTreeHTML(langCode, config) {
     const flag = config.flag || "";
     const anki = config.anki || {};
     const ankiEnabled = anki.enabled !== false ? "✅ aktiviert" : "❌ deaktiviert";
-    
+
     return `
         <div class="tree-node">
             <div class="tree-toggle" data-target="tree-${langCode}">
@@ -221,26 +224,36 @@ function buildTreeHTML(langCode, config) {
                 </div>
                 
                 <!-- Anki Connect Einstellungen -->
-                <div class="tree-section-title">📋 Anki Connect <span class="tree-badge ${ankiEnabled.includes('✅') ? 'badge-ok' : 'badge-off'}">${ankiEnabled}</span></div>
+                <div class="tree-section-title">📋 Anki Connect <span class="tree-badge ${ankiEnabled.includes("✅") ? "badge-ok" : "badge-off"}">${ankiEnabled}</span></div>
                 
                 <div class="tree-item">
                     <span class="tree-key">Status:</span>
-                    <span class="tree-value ${ankiEnabled.includes('✅') ? '' : 'text-muted'}">${ankiEnabled}</span>
+                    <span class="tree-value ${ankiEnabled.includes("✅") ? "" : "text-muted"}">${ankiEnabled}</span>
                 </div>
                 
-                ${anki.deck ? `
+                ${
+                    anki.deck
+                        ? `
                 <div class="tree-item">
                     <span class="tree-key">Deck:</span>
                     <span class="tree-value">${escapeHtml(anki.deck)}</span>
-                </div>` : ""}
+                </div>`
+                        : ""
+                }
                 
-                ${anki.model ? `
+                ${
+                    anki.model
+                        ? `
                 <div class="tree-item">
                     <span class="tree-key">Notiztyp:</span>
                     <span class="tree-value">${escapeHtml(anki.model)}</span>
-                </div>` : ""}
+                </div>`
+                        : ""
+                }
                 
-                ${anki.fields ? `
+                ${
+                    anki.fields
+                        ? `
                 <div class="tree-item">
                     <span class="tree-key">Feld-Mapping:</span>
                 </div>
@@ -255,7 +268,9 @@ function buildTreeHTML(langCode, config) {
                 <div class="tree-item tree-indent">
                     <span class="tree-key">Audio →</span>
                     <span class="tree-value">${escapeHtml(anki.fields.audio || "-")}</span>
-                </div>` : ""}
+                </div>`
+                        : ""
+                }
                 
                 <!-- URLs -->
                 <div class="tree-node">
@@ -264,14 +279,18 @@ function buildTreeHTML(langCode, config) {
                         <span class="tree-key">urls (${(config.urls || []).length})</span>
                     </div>
                     <div class="tree-children collapsed" id="tree-${langCode}-urls">
-                        ${(config.urls || []).map((url, i) => `
+                        ${(config.urls || [])
+                            .map(
+                                (url, i) => `
                             <div class="tree-item tree-url">
                                 <span class="tree-key">url${i + 1}:</span>
                                 <span class="tree-value">
                                     <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>
                                 </span>
                             </div>
-                        `).join("")}
+                        `
+                            )
+                            .join("")}
                     </div>
                 </div>
                 
@@ -281,7 +300,7 @@ function buildTreeHTML(langCode, config) {
 }
 
 function setupTreeToggles() {
-    document.querySelectorAll(".tree-toggle").forEach(toggle => {
+    document.querySelectorAll(".tree-toggle").forEach((toggle) => {
         toggle.addEventListener("click", () => {
             const targetId = toggle.getAttribute("data-target");
             const children = document.getElementById(targetId);

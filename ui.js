@@ -1,46 +1,28 @@
-import {
-    sentenceField,
-    wordField,
-    preview,
-    startButton,
-    ankiConnectButton
-} from "./dom.js";
+import { sentenceField, wordField, preview, startButton, ankiConnectButton } from "./dom.js";
 
 import { escapeRegExp } from "./utils.js";
 
 export function updatePreview() {
+    const sentence = sentenceField.value;
 
-    const sentence =
-    sentenceField.value;
-
-    const word =
-    wordField.value.trim();
+    const word = wordField.value.trim();
 
     if (!sentence || !word) {
-
         preview.innerHTML = "";
 
         return;
     }
 
-    const regex =
-    new RegExp(
-        `(${escapeRegExp(word)})`,
-               "gi"
-    );
+    const regex = new RegExp(`(${escapeRegExp(word)})`, "gi");
 
-    preview.innerHTML =
-    sentence.replace(
-        regex,
-        '<span class="highlight">$1</span>'
-    );
+    preview.innerHTML = sentence.replace(regex, '<span class="highlight">$1</span>');
 }
 
 export function validateForm() {
     const isValid = sentenceField.value.trim() && wordField.value.trim();
-    
+
     startButton.disabled = !isValid;
-    
+
     // Anki-Connect-Button: aktiv wenn Formular gültig UND (TTS deaktiviert ODER Audio existiert)
     if (ankiConnectButton) {
         ankiConnectButton.disabled = !isValid;

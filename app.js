@@ -15,7 +15,7 @@ import {
     goToNextPage,
     goToLastPage,
     showAllEntries,
-    showDefaultView
+    showDefaultView,
 } from "./history.js";
 import {
     getActiveLang,
@@ -24,13 +24,13 @@ import {
     getProcessedUrls,
     getLangConfig,
     isAnkiEnabled,
-    isAnkiEnabledForLang
+    isAnkiEnabledForLang,
 } from "./config.js";
 import {
     cacheAudio,
     clearAllHistory,
     loadHistory as loadHistoryFromDB,
-    getCachedAudio
+    getCachedAudio,
 } from "./tts-cache.js";
 import { createInfoOverlay } from "./info-overlay.js";
 import { initAudioPlayer, resetPlayer } from "./audio-player.js";
@@ -47,7 +47,7 @@ let lastGeneratedWord = "";
 
 function updateAnkiButtonVisibility() {
     if (!DOM.ankiConnectButton) return;
-    
+
     if (isAnkiEnabledForLang()) {
         DOM.ankiConnectButton.style.display = "";
     } else {
@@ -62,20 +62,20 @@ function updateAnkiButtonVisibility() {
 function initLanguageSelector() {
     const selector = document.getElementById("languageSelector");
     if (!selector) return;
-    
+
     const langs = getAllLangs();
     const activeLang = getActiveLang();
-    
+
     selector.innerHTML = "";
-    
-    langs.forEach(lang => {
+
+    langs.forEach((lang) => {
         const option = document.createElement("option");
         option.value = lang.code;
         option.textContent = `${lang.flag} ${lang.name}`;
         option.selected = lang.code === activeLang;
         selector.appendChild(option);
     });
-    
+
     selector.addEventListener("change", (event) => {
         setActiveLang(event.target.value);
         updatePageTitle();
@@ -103,7 +103,7 @@ function onHistoryLanguageChange(langCode) {
     if (selector) {
         selector.value = langCode;
     }
-    
+
     // Titel aktualisieren
     setActiveLang(langCode);
     updatePageTitle(langCode);
@@ -123,7 +123,7 @@ function hideDownloadButton() {
 async function checkAnkiStatus() {
     const statusEl = document.getElementById("ankiStatus");
     if (!statusEl) return;
-    
+
     const isConnected = await testAnkiConnection();
     statusEl.textContent = isConnected ? "🟢" : "🔴";
     statusEl.title = isConnected ? "Anki verbunden" : "Anki nicht erreichbar";
@@ -135,7 +135,6 @@ async function checkAnkiStatus() {
 
 DOM.sentenceField.value = localStorage.getItem("anki_sentence") || "";
 DOM.wordField.value = localStorage.getItem("anki_word") || "";
-
 
 // ======================================
 // Event Listener
@@ -152,10 +151,8 @@ DOM.sentenceField.addEventListener("input", () => {
 // Doppelklick auf Wort im Satz
 DOM.sentenceField.addEventListener("dblclick", () => {
     const start = DOM.sentenceField.selectionStart;
-    const end   = DOM.sentenceField.selectionEnd;
-    const selectedText = DOM.sentenceField.value
-        .substring(start, end)
-        .trim();
+    const end = DOM.sentenceField.selectionEnd;
+    const selectedText = DOM.sentenceField.value.substring(start, end).trim();
 
     if (selectedText.length > 0) {
         DOM.wordField.value = selectedText;
@@ -255,7 +252,7 @@ DOM.form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const sentenceRaw = DOM.sentenceField.value.trim();
-    const wordRaw     = DOM.wordField.value.trim();
+    const wordRaw = DOM.wordField.value.trim();
 
     if (!sentenceRaw || !wordRaw) return;
 
@@ -263,24 +260,24 @@ DOM.form.addEventListener("submit", async function (event) {
 
     let audioBlob = null;
     let audioGenerated = false;
-    
+
     // TTS generieren und ID erhalten
     let historyId = null;
 
     if (DOM.enableTTS.checked) {
         DOM.ttsStatus.textContent = "TTS wird erzeugt ...";
-        
+
         audioBlob = await generateTTS(sentenceRaw);
-        
+
         if (audioBlob) {
             // Erst History-Eintrag erstellen, dann ID für Audio nutzen
             const entryId = Date.now(); // Temporäre ID
             await saveToHistory(sentenceRaw, wordRaw, currentLang, validateForm, updatePreview);
-            
+
             // Jetzt die echte ID aus der DB holen und Audio speichern
             const history = await loadHistoryFromDB(validateForm, updatePreview);
             const lastEntry = history[0]; // Neuester Eintrag
-            
+
             if (lastEntry) {
                 await cacheAudio(lastEntry.id, audioBlob);
                 audioGenerated = true;
@@ -289,7 +286,7 @@ DOM.form.addEventListener("submit", async function (event) {
                 const { loadAudioForHistory } = await import("./audio-player.js");
                 await loadAudioForHistory(lastEntry.id, sentenceRaw);
             }
-            
+
             // Für Anki-Connect-Button merken
             lastGeneratedAudioBlob = audioBlob;
             lastGeneratedSentence = sentenceRaw;
@@ -310,13 +307,13 @@ DOM.form.addEventListener("submit", async function (event) {
     } else {
         hideDownloadButton();
     }
-    
+
     // Anki-Karte erstellen
     await createAnkiCard(sentenceRaw, wordRaw, audioBlob, currentLang);
 
     // URLs öffnen
     const urls = getProcessedUrls(sentenceRaw, wordRaw);
-    urls.forEach(url => window.open(url, "_blank"));
+    urls.forEach((url) => window.open(url, "_blank"));
 });
 
 // ======================================
@@ -330,23 +327,21 @@ if (!isAnkiEnabled()) {
 DOM.ankiConnectButton.addEventListener("click", async () => {
     const sentenceRaw = DOM.sentenceField.value.trim();
     const wordRaw = DOM.wordField.value.trim();
-    
+
     if (!sentenceRaw || !wordRaw) return;
-    
+
     // Prüfen, ob wir aktuelle Audio-Daten haben
     // (entweder von der letzten Generierung oder aus dem Cache des aktuellen Satzes)
     let audioBlob = lastGeneratedAudioBlob;
-    
+
     // Wenn sich Satz/Wort geändert hat, Audio aus dem letzten History-Eintrag holen
     if (sentenceRaw !== lastGeneratedSentence || wordRaw !== lastGeneratedWord) {
         audioBlob = null;
-        
+
         // Aus der History das Audio zum aktuellen Satz suchen
         const history = await loadHistoryFromDB();
-        const matchingEntry = history.find(
-            e => e.sentence === sentenceRaw && e.word === wordRaw
-        );
-        
+        const matchingEntry = history.find((e) => e.sentence === sentenceRaw && e.word === wordRaw);
+
         if (matchingEntry) {
             const audioUrl = await getCachedAudio(matchingEntry.id);
             if (audioUrl) {
@@ -355,7 +350,7 @@ DOM.ankiConnectButton.addEventListener("click", async () => {
             }
         }
     }
-    
+
     // Anki-Karte erstellen
     const currentLang = getActiveLang();
     await createAnkiCard(sentenceRaw, wordRaw, audioBlob, currentLang);

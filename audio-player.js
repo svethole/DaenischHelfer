@@ -122,7 +122,7 @@ function togglePlayPause() {
     if (isPlaying) {
         audio.pause();
     } else {
-        audio.play().catch(err => {
+        audio.play().catch((err) => {
             console.error("Audio konnte nicht abgespielt werden:", err);
         });
     }

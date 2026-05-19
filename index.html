@@ -1,223 +1,247 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anki-Helfer Dänisch</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Anki-Helfer Dänisch</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="flex-between mb-md">
+                <h1>Anki-Helfer</h1>
 
-<div class="container">
+                <div class="flex-center gap-sm">
+                    <span id="ankiStatus" class="anki-status" title="Anki-Status">⚪</span>
 
-    <div class="flex-between mb-md">
-        <h1>Anki-Helfer</h1>
+                    <button type="button" id="infoButton" class="btn btn-sm" title="Informationen">
+                        ℹ️ Info
+                    </button>
 
-        <div class="flex-center gap-sm">
-            <span id="ankiStatus" class="anki-status" title="Anki-Status">⚪</span>
-            
-            <button type="button" id="infoButton"
-                    class="btn btn-sm"
-                    title="Informationen">
-                ℹ️ Info
-            </button>
-            
-            <select id="languageSelector" class="lang-select"></select>
-        </div>
-
-    </div>
-
-    <form id="ankiForm">
-
-        <label for="sentence">Satz</label>
-
-        <div class="flex-start gap-sm">
-            <textarea id="sentence" class="flex-1" required></textarea>
-
-            <button type="button" id="copySentence"
-                    class="btn btn-success btn-icon copyButton"
-                    title="Satz kopieren"
-                    aria-label="Satz kopieren">
-                📋
-            </button>
-        </div>
-
-        <label for="word">Wort / Phrase</label>
-
-        <div class="flex gap-sm">
-            <input type="text" id="word" class="flex-1" required>
-
-            <button type="button" id="copyWord"
-                    class="btn btn-success btn-icon copyButton"
-                    title="Wort kopieren"
-                    aria-label="Wort kopieren">
-                📋
-            </button>
-        </div>
-
-        <div class="flex-center gap-sm mt-xl">
-            <label class="checkboxLabel text-normal">
-                <input type="checkbox" id="enableTTS" checked>
-                TTS-Datei erstellen
-            </label>
-
-            <button type="submit" id="startButton" class="btn" disabled>
-                Start
-            </button>
-            
-            <button type="button" id="ankiConnectButton" class="btn btn-success" disabled>
-                Anki Connect
-            </button>
-
-            <button type="button" id="clearButton" class="btn btn-danger">
-                Felder löschen
-            </button>
-        </div>
-
-    </form>
-
-    <div class="preview bg-preview border rounded mt-2xl text-lg" id="preview"></div>
-
-    <div id="ttsStatus" class="loading mt-md"></div>
-
-    <a id="downloadLink"
-       class="hidden"
-       download="dansk_tts.mp3"
-       style="display: none;">
-    </a>
-
-    <!-- Audio-Player -->
-    <div id="audioPlayerContainer" class="audio-player hidden mt-lg">
-        <div class="audio-player-inner">
-            <button type="button" id="playPauseButton" class="btn btn-icon btn-play" title="Abspielen">
-                ▶️
-            </button>
-
-            <div class="audio-progress-container">
-                <div id="audioProgressBar" class="audio-progress-bar"></div>
-                <input type="range" id="audioSeekBar" class="audio-seek" min="0" max="100" value="0" step="0.1">
+                    <select id="languageSelector" class="lang-select"></select>
+                </div>
             </div>
 
-            <span id="audioCurrentTime" class="audio-time">0:00</span>
-            <span class="audio-time-separator">/</span>
-            <span id="audioDuration" class="audio-time">0:00</span>
+            <form id="ankiForm">
+                <label for="sentence">Satz</label>
 
-            <a id="playerDownloadLink"
-               class="btn btn-icon btn-download"
-               title="TTS herunterladen"
-               download="">
-                ⬇️
-            </a>
+                <div class="flex-start gap-sm">
+                    <textarea id="sentence" class="flex-1" required></textarea>
 
-            <button type="button" id="stopButton" class="btn btn-sm btn-danger" title="Stop">
-                ⏹
-            </button>
+                    <button
+                        type="button"
+                        id="copySentence"
+                        class="btn btn-success btn-icon copyButton"
+                        title="Satz kopieren"
+                        aria-label="Satz kopieren"
+                    >
+                        📋
+                    </button>
+                </div>
+
+                <label for="word">Wort / Phrase</label>
+
+                <div class="flex gap-sm">
+                    <input type="text" id="word" class="flex-1" required />
+
+                    <button
+                        type="button"
+                        id="copyWord"
+                        class="btn btn-success btn-icon copyButton"
+                        title="Wort kopieren"
+                        aria-label="Wort kopieren"
+                    >
+                        📋
+                    </button>
+                </div>
+
+                <div class="flex-center gap-sm mt-xl">
+                    <label class="checkboxLabel text-normal">
+                        <input type="checkbox" id="enableTTS" checked />
+                        TTS-Datei erstellen
+                    </label>
+
+                    <button type="submit" id="startButton" class="btn" disabled>Start</button>
+
+                    <button type="button" id="ankiConnectButton" class="btn btn-success" disabled>
+                        Anki Connect
+                    </button>
+
+                    <button type="button" id="clearButton" class="btn btn-danger">
+                        Felder löschen
+                    </button>
+                </div>
+            </form>
+
+            <div class="preview bg-preview border rounded mt-2xl text-lg" id="preview"></div>
+
+            <div id="ttsStatus" class="loading mt-md"></div>
+
+            <a id="downloadLink" class="hidden" download="dansk_tts.mp3" style="display: none"> </a>
+
+            <!-- Audio-Player -->
+            <div id="audioPlayerContainer" class="audio-player hidden mt-lg">
+                <div class="audio-player-inner">
+                    <button
+                        type="button"
+                        id="playPauseButton"
+                        class="btn btn-icon btn-play"
+                        title="Abspielen"
+                    >
+                        ▶️
+                    </button>
+
+                    <div class="audio-progress-container">
+                        <div id="audioProgressBar" class="audio-progress-bar"></div>
+                        <input
+                            type="range"
+                            id="audioSeekBar"
+                            class="audio-seek"
+                            min="0"
+                            max="100"
+                            value="0"
+                            step="0.1"
+                        />
+                    </div>
+
+                    <span id="audioCurrentTime" class="audio-time">0:00</span>
+                    <span class="audio-time-separator">/</span>
+                    <span id="audioDuration" class="audio-time">0:00</span>
+
+                    <a
+                        id="playerDownloadLink"
+                        class="btn btn-icon btn-download"
+                        title="TTS herunterladen"
+                        download=""
+                    >
+                        ⬇️
+                    </a>
+
+                    <button
+                        type="button"
+                        id="stopButton"
+                        class="btn btn-sm btn-danger"
+                        title="Stop"
+                    >
+                        ⏹
+                    </button>
+                </div>
+            </div>
+
+            <div class="historySection mt-3xl">
+                <div class="flex-between mb-md">
+                    <h2>Letzte Anfragen</h2>
+
+                    <div class="flex-center gap-sm">
+                        <!-- NEU: Export/Import -->
+                        <button
+                            type="button"
+                            id="exportHistoryButton"
+                            class="btn btn-sm"
+                            title="History exportieren"
+                        >
+                            📤 Export
+                        </button>
+
+                        <button
+                            type="button"
+                            id="importHistoryButton"
+                            class="btn btn-sm"
+                            title="History importieren"
+                        >
+                            📥 Import
+                        </button>
+
+                        <!-- Versteckte Datei-Eingabe für Import -->
+                        <input
+                            type="file"
+                            id="importFileInput"
+                            accept=".json,.zip"
+                            class="hidden"
+                        />
+
+                        <button type="button" id="toggleHistoryButton" class="btn btn-sm">
+                            Letzte Anfragen verbergen
+                        </button>
+
+                        <button type="button" id="clearHistoryButton" class="btn btn-sm btn-danger">
+                            Verlauf löschen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info-Zeile -->
+                <div id="paginationInfo" class="text-muted text-sm mb-sm">
+                    Zeige 1–10 von 42 Einträgen
+                </div>
+
+                <div id="historyListContainer">
+                    <div id="historyList"></div>
+
+                    <!-- Pagination-Controls -->
+                    <div class="pagination-controls flex-center gap-sm mb-md flex-wrap">
+                        <select id="pageSizeSelect" class="pagination-select">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                            <option value="60">60</option>
+                            <option value="70">70</option>
+                            <option value="80">80</option>
+                            <option value="90">90</option>
+                            <option value="100">100</option>
+                            <option value="all">Alle</option>
+                            <option value="custom">Benutzerdefiniert</option>
+                        </select>
+
+                        <input
+                            type="number"
+                            id="customPageSize"
+                            class="pagination-input hidden"
+                            min="1"
+                            max="999"
+                            placeholder="Anzahl"
+                            style="width: 80px"
+                        />
+
+                        <span
+                            id="pageSizeWarning"
+                            class="text-danger hidden"
+                            style="font-size: 12px"
+                        >
+                            ⚠️ Nur Zahlen erlaubt
+                        </span>
+
+                        <button type="button" id="firstPageButton" class="btn btn-sm">
+                            &lt;&lt; Erste <span class="page-size-label">10</span>
+                        </button>
+
+                        <button type="button" id="prevPageButton" class="btn btn-sm">
+                            &lt; Vorige <span class="page-size-label">10</span>
+                        </button>
+
+                        <button type="button" id="nextPageButton" class="btn btn-sm">
+                            Nächste <span class="page-size-label">10</span> &gt;
+                        </button>
+
+                        <button type="button" id="lastPageButton" class="btn btn-sm">
+                            Letzte <span class="page-size-label">10</span> &gt;&gt;
+                        </button>
+
+                        <button type="button" id="showAllButton" class="btn btn-sm">
+                            Alle anzeigen
+                        </button>
+
+                        <button type="button" id="showDefaultButton" class="btn btn-sm" disabled>
+                            Standardansicht
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="historySection mt-3xl">
-
-    <div class="flex-between mb-md">
-        <h2>Letzte Anfragen</h2>
-
-        <div class="flex-center gap-sm">
-            <!-- NEU: Export/Import -->
-            <button type="button" id="exportHistoryButton"
-                    class="btn btn-sm"
-                    title="History exportieren">
-                📤 Export
-            </button>
-
-            <button type="button" id="importHistoryButton"
-                    class="btn btn-sm"
-                    title="History importieren">
-                📥 Import
-            </button>
-
-            <!-- Versteckte Datei-Eingabe für Import -->
-            <input type="file" id="importFileInput" accept=".json,.zip" class="hidden">
-
-            <button type="button" id="toggleHistoryButton"
-                    class="btn btn-sm">
-                Letzte Anfragen verbergen
-            </button>
-
-            <button type="button" id="clearHistoryButton"
-                    class="btn btn-sm btn-danger">
-                Verlauf löschen
-            </button>
-        </div>
-    </div>
-
-    <!-- Info-Zeile -->
-    <div id="paginationInfo" class="text-muted text-sm mb-sm">
-        Zeige 1–10 von 42 Einträgen
-    </div>
-
-    <div id="historyListContainer">
-        <div id="historyList"></div>
-
-        <!-- Pagination-Controls -->
-        <div class="pagination-controls flex-center gap-sm mb-md flex-wrap">
-            <select id="pageSizeSelect" class="pagination-select">
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="30">30</option>
-                <option value="40">40</option>
-                <option value="50">50</option>
-                <option value="60">60</option>
-                <option value="70">70</option>
-                <option value="80">80</option>
-                <option value="90">90</option>
-                <option value="100">100</option>
-                <option value="all">Alle</option>
-                <option value="custom">Benutzerdefiniert</option>
-            </select>
-
-            <input type="number"
-                id="customPageSize"
-                class="pagination-input hidden"
-                min="1"
-                max="999"
-                placeholder="Anzahl"
-                style="width: 80px;">
-
-            <span id="pageSizeWarning" class="text-danger hidden" style="font-size: 12px;">
-                ⚠️ Nur Zahlen erlaubt
-            </span>
-
-            <button type="button" id="firstPageButton" class="btn btn-sm">
-                &lt;&lt; Erste <span class="page-size-label">10</span>
-            </button>
-
-            <button type="button" id="prevPageButton" class="btn btn-sm">
-                &lt; Vorige <span class="page-size-label">10</span>
-            </button>
-
-            <button type="button" id="nextPageButton" class="btn btn-sm">
-                Nächste <span class="page-size-label">10</span> &gt;
-            </button>
-
-            <button type="button" id="lastPageButton" class="btn btn-sm">
-                Letzte <span class="page-size-label">10</span> &gt;&gt;
-            </button>
-
-            <button type="button" id="showAllButton" class="btn btn-sm">
-                Alle anzeigen
-            </button>
-
-            <button type="button" id="showDefaultButton" class="btn btn-sm" disabled>
-                Standardansicht
-            </button>
-        </div>
-    </div>
-
-</div>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script type="module" src="app.js"></script>
-
-</body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script type="module" src="app.js"></script>
+    </body>
 </html>
