@@ -653,6 +653,43 @@ textarea {
     text-decoration: underline;
 }
 
+/* --- Tree-Sektionen --- */
+.tree-section-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: var(--spacing-sm);
+    margin-bottom: 2px;
+    padding-top: var(--spacing-xs);
+    border-top: 1px dotted var(--color-border);
+}
+
+.tree-section-title:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.tree-indent {
+    margin-left: 16px;
+}
+
+.tree-badge {
+    font-size: 11px;
+    font-weight: normal;
+    margin-left: var(--spacing-xs);
+}
+
+.badge-ok {
+    color: var(--color-success);
+}
+
+.badge-off {
+    color: var(--color-danger);
+}
+
 /* --- Statistiken --- */
 .stats-container {
     background: var(--color-bg-preview);

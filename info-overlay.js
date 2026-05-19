@@ -181,41 +181,86 @@ async function loadOverlayContent() {
 
 function buildTreeHTML(langCode, config) {
     const flag = config.flag || "";
-
+    const anki = config.anki || {};
+    const ankiEnabled = anki.enabled !== false ? "✅ aktiviert" : "❌ deaktiviert";
+    
     return `
-    <div class="tree-node">
-    <div class="tree-toggle" data-target="tree-${langCode}">
-    <span class="tree-arrow collapsed">▶</span>
-    <span class="tree-label">${flag} ${config.name || langCode}</span>
-    </div>
-    <div class="tree-children collapsed" id="tree-${langCode}">
-    <div class="tree-item">
-    <span class="tree-key">ttsModel:</span>
-    <span class="tree-value">${escapeHtml(config.ttsModel || "-")}</span>
-    </div>
-    <div class="tree-item">
-    <span class="tree-key">voiceId:</span>
-    <span class="tree-value">${escapeHtml(config.voiceId || "-")}</span>
-    </div>
-    <div class="tree-node">
-    <div class="tree-toggle" data-target="tree-${langCode}-urls">
-    <span class="tree-arrow collapsed">▶</span>
-    <span class="tree-key">urls (${(config.urls || []).length})</span>
-    </div>
-    <div class="tree-children collapsed" id="tree-${langCode}-urls">
-    ${(config.urls || []).map((url, i) => `
-        <div class="tree-item tree-url">
-        <span class="tree-key">url${i + 1}:</span>
-        <span class="tree-value">
-        <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>
-        </span>
+        <div class="tree-node">
+            <div class="tree-toggle" data-target="tree-${langCode}">
+                <span class="tree-arrow collapsed">▶</span>
+                <span class="tree-label">${flag} ${config.name || langCode}</span>
+            </div>
+            <div class="tree-children collapsed" id="tree-${langCode}">
+                
+                <!-- TTS-Einstellungen -->
+                <div class="tree-section-title">🎵 TTS</div>
+                <div class="tree-item">
+                    <span class="tree-key">ttsModel:</span>
+                    <span class="tree-value">${escapeHtml(config.ttsModel || "-")}</span>
+                </div>
+                <div class="tree-item">
+                    <span class="tree-key">voiceId:</span>
+                    <span class="tree-value">${escapeHtml(config.voiceId || "-")}</span>
+                </div>
+                
+                <!-- Anki Connect Einstellungen -->
+                <div class="tree-section-title">📋 Anki Connect <span class="tree-badge ${ankiEnabled.includes('✅') ? 'badge-ok' : 'badge-off'}">${ankiEnabled}</span></div>
+                
+                <div class="tree-item">
+                    <span class="tree-key">Status:</span>
+                    <span class="tree-value ${ankiEnabled.includes('✅') ? '' : 'text-muted'}">${ankiEnabled}</span>
+                </div>
+                
+                ${anki.deck ? `
+                <div class="tree-item">
+                    <span class="tree-key">Deck:</span>
+                    <span class="tree-value">${escapeHtml(anki.deck)}</span>
+                </div>` : ""}
+                
+                ${anki.model ? `
+                <div class="tree-item">
+                    <span class="tree-key">Notiztyp:</span>
+                    <span class="tree-value">${escapeHtml(anki.model)}</span>
+                </div>` : ""}
+                
+                ${anki.fields ? `
+                <div class="tree-item">
+                    <span class="tree-key">Feld-Mapping:</span>
+                </div>
+                <div class="tree-item tree-indent">
+                    <span class="tree-key">Satz →</span>
+                    <span class="tree-value">${escapeHtml(anki.fields.sentence || "-")}</span>
+                </div>
+                <div class="tree-item tree-indent">
+                    <span class="tree-key">Wort →</span>
+                    <span class="tree-value">${escapeHtml(anki.fields.word || "-")}</span>
+                </div>
+                <div class="tree-item tree-indent">
+                    <span class="tree-key">Audio →</span>
+                    <span class="tree-value">${escapeHtml(anki.fields.audio || "-")}</span>
+                </div>` : ""}
+                
+                <!-- URLs -->
+                <div class="tree-node">
+                    <div class="tree-toggle" data-target="tree-${langCode}-urls">
+                        <span class="tree-arrow collapsed">▶</span>
+                        <span class="tree-key">urls (${(config.urls || []).length})</span>
+                    </div>
+                    <div class="tree-children collapsed" id="tree-${langCode}-urls">
+                        ${(config.urls || []).map((url, i) => `
+                            <div class="tree-item tree-url">
+                                <span class="tree-key">url${i + 1}:</span>
+                                <span class="tree-value">
+                                    <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>
+                                </span>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+                
+            </div>
         </div>
-        `).join("")}
-        </div>
-        </div>
-        </div>
-        </div>
-        `;
+    `;
 }
 
 function setupTreeToggles() {
