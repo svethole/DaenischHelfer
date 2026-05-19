@@ -68,6 +68,17 @@ function toggleOverlay() {
     }
 }
 
+// Version aus JSON laden
+async function getVersion() {
+    try {
+        const response = await fetch("version.json");
+        const data = await response.json();
+        return data.version;
+    } catch {
+        return "?.?.?";
+    }
+}
+
 // ======================================
 // Inhalt laden
 // ======================================
@@ -95,6 +106,8 @@ async function loadOverlayContent() {
 
         // API-Key maskieren
         const maskedKey = maskApiKey(apiConfig.apiKey);
+        
+        const version = await getVersion();
 
         body.innerHTML = `
         <div class="overlay-section">
@@ -159,6 +172,10 @@ async function loadOverlayContent() {
             <strong>E-Mail:</strong>
             <a href="mailto:svetho@posteo.uk">svetho@posteo.uk</a>
             </p>
+            </div>
+            <div class="overlay-section">
+                <h3>📦 Version</h3>
+                <p><strong>v${version}</strong></p>
             </div>
             </div>
             `;
