@@ -27,13 +27,17 @@ import {
 import {
     cacheAudio,
     clearAllHistory,
-    loadHistory as loadHistoryFromDB
+    loadHistory as loadHistoryFromDB,
+    getCachedAudio
 } from "./tts-cache.js";
 import { createInfoOverlay } from "./info-overlay.js";
 import { initAudioPlayer, resetPlayer } from "./audio-player.js";
 import { initHistoryIO } from "./history-io.js";
+import { testAnkiConnection, createAnkiCard } from "./anki-connect.js";
 
-
+let lastGeneratedAudioBlob = null;
+let lastGeneratedSentence = "";
+let lastGeneratedWord = "";
 
 // ======================================
 // Sprach-Dropdown und Titel
@@ -94,6 +98,18 @@ function onHistoryLanguageChange(langCode) {
 
 function hideDownloadButton() {
     resetPlayer();
+}
+
+// ======================================
+// Anki Connect Status
+// ======================================
+async function checkAnkiStatus() {
+    const statusEl = document.getElementById("ankiStatus");
+    if (!statusEl) return;
+    
+    const isConnected = await testAnkiConnection();
+    statusEl.textContent = isConnected ? "🟢" : "🔴";
+    statusEl.title = isConnected ? "Anki verbunden" : "Anki nicht erreichbar";
 }
 
 // ======================================
@@ -228,14 +244,16 @@ DOM.form.addEventListener("submit", async function (event) {
 
     const currentLang = getActiveLang();
 
+    let audioBlob = null;
+    let audioGenerated = false;
+    
     // TTS generieren und ID erhalten
     let historyId = null;
-    let audioGenerated = false;
 
     if (DOM.enableTTS.checked) {
         DOM.ttsStatus.textContent = "TTS wird erzeugt ...";
         
-        const audioBlob = await generateTTS(sentenceRaw);
+        audioBlob = await generateTTS(sentenceRaw);
         
         if (audioBlob) {
             // Erst History-Eintrag erstellen, dann ID für Audio nutzen
@@ -254,6 +272,11 @@ DOM.form.addEventListener("submit", async function (event) {
                 const { loadAudioForHistory } = await import("./audio-player.js");
                 await loadAudioForHistory(lastEntry.id, sentenceRaw);
             }
+            
+            // Für Anki-Connect-Button merken
+            lastGeneratedAudioBlob = audioBlob;
+            lastGeneratedSentence = sentenceRaw;
+            lastGeneratedWord = wordRaw;
         }
     } else {
         DOM.ttsStatus.textContent = "";
@@ -270,12 +293,52 @@ DOM.form.addEventListener("submit", async function (event) {
     } else {
         hideDownloadButton();
     }
+    
+    // Anki-Karte erstellen
+    await createAnkiCard(sentenceRaw, wordRaw, audioBlob, currentLang);
 
     // URLs öffnen
     const urls = getProcessedUrls(sentenceRaw, wordRaw);
     urls.forEach(url => window.open(url, "_blank"));
 });
 
+// ======================================
+// Anki Connect Button
+// ======================================
+
+DOM.ankiConnectButton.addEventListener("click", async () => {
+    const sentenceRaw = DOM.sentenceField.value.trim();
+    const wordRaw = DOM.wordField.value.trim();
+    
+    if (!sentenceRaw || !wordRaw) return;
+    
+    // Prüfen, ob wir aktuelle Audio-Daten haben
+    // (entweder von der letzten Generierung oder aus dem Cache des aktuellen Satzes)
+    let audioBlob = lastGeneratedAudioBlob;
+    
+    // Wenn sich Satz/Wort geändert hat, Audio aus dem letzten History-Eintrag holen
+    if (sentenceRaw !== lastGeneratedSentence || wordRaw !== lastGeneratedWord) {
+        audioBlob = null;
+        
+        // Aus der History das Audio zum aktuellen Satz suchen
+        const history = await loadHistoryFromDB();
+        const matchingEntry = history.find(
+            e => e.sentence === sentenceRaw && e.word === wordRaw
+        );
+        
+        if (matchingEntry) {
+            const audioUrl = await getCachedAudio(matchingEntry.id);
+            if (audioUrl) {
+                const response = await fetch(audioUrl);
+                audioBlob = await response.blob();
+            }
+        }
+    }
+    
+    // Anki-Karte erstellen
+    const currentLang = getActiveLang();
+    await createAnkiCard(sentenceRaw, wordRaw, audioBlob, currentLang);
+});
 
 // ======================================
 // Initialisierung
@@ -300,3 +363,4 @@ loadHistory(validateForm, updatePreview, onHistoryLanguageChange);
 updateHistoryVisibility();
 hideDownloadButton();
 initAudioPlayer();
+checkAnkiStatus();

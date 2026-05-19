@@ -2,11 +2,11 @@ import {
     sentenceField,
     wordField,
     preview,
-    startButton
+    startButton,
+    ankiConnectButton
 } from "./dom.js";
 
-import { escapeRegExp }
-from "./utils.js";
+import { escapeRegExp } from "./utils.js";
 
 export function updatePreview() {
 
@@ -37,11 +37,14 @@ export function updatePreview() {
 }
 
 export function validateForm() {
-
-    startButton.disabled = !(
-        sentenceField.value.trim() &&
-        wordField.value.trim()
-    );
+    const isValid = sentenceField.value.trim() && wordField.value.trim();
+    
+    startButton.disabled = !isValid;
+    
+    // Anki-Connect-Button: aktiv wenn Formular gültig UND (TTS deaktiviert ODER Audio existiert)
+    if (ankiConnectButton) {
+        ankiConnectButton.disabled = !isValid;
+    }
 }
 
 export function flashCopyButton(button) {

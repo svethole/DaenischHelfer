@@ -315,6 +315,12 @@ textarea {
     cursor: pointer;
 }
 
+/* --- Anki Connect Plus Statusanzeige --- */
+.anki-status {
+    font-size: 12px;
+    cursor: help;
+}
+
 /* --- Copy-Button Icons --- */
 .copyButton img,
 .btn-icon img {

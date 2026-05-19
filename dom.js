@@ -65,3 +65,5 @@ export const paginationInfo = document.getElementById("paginationInfo");
 export const exportHistoryButton = document.getElementById("exportHistoryButton");
 export const importHistoryButton = document.getElementById("importHistoryButton");
 export const importFileInput = document.getElementById("importFileInput");
+
+export const ankiConnectButton = document.getElementById("ankiConnectButton");

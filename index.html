@@ -13,14 +13,16 @@
     <div class="flex-between mb-md">
         <h1>Anki-Helfer</h1>
 
-        <select id="languageSelector" class="lang-select"></select>
-
         <div class="flex-center gap-sm">
+            <span id="ankiStatus" class="anki-status" title="Anki-Status">⚪</span>
+            
             <button type="button" id="infoButton"
                     class="btn btn-sm"
                     title="Informationen">
                 ℹ️ Info
             </button>
+            
+            <select id="languageSelector" class="lang-select"></select>
         </div>
 
     </div>
@@ -62,9 +64,13 @@
             <button type="submit" id="startButton" class="btn" disabled>
                 Start
             </button>
+            
+            <button type="button" id="ankiConnectButton" class="btn btn-success" disabled>
+                Anki Connect
+            </button>
 
             <button type="button" id="clearButton" class="btn btn-danger">
-                Alles löschen
+                Felder löschen
             </button>
         </div>
 
