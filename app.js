@@ -22,7 +22,9 @@ import {
     setActiveLang,
     getAllLangs,
     getProcessedUrls,
-    getLangConfig
+    getLangConfig,
+    isAnkiEnabled,
+    isAnkiEnabledForLang
 } from "./config.js";
 import {
     cacheAudio,
@@ -38,6 +40,20 @@ import { testAnkiConnection, createAnkiCard } from "./anki-connect.js";
 let lastGeneratedAudioBlob = null;
 let lastGeneratedSentence = "";
 let lastGeneratedWord = "";
+
+// ======================================
+// Anki-Connect-Button Sichtbarkeit
+// ======================================
+
+function updateAnkiButtonVisibility() {
+    if (!DOM.ankiConnectButton) return;
+    
+    if (isAnkiEnabledForLang()) {
+        DOM.ankiConnectButton.style.display = "";
+    } else {
+        DOM.ankiConnectButton.style.display = "none";
+    }
+}
 
 // ======================================
 // Sprach-Dropdown und Titel
@@ -65,6 +81,7 @@ function initLanguageSelector() {
         updatePageTitle();
         validateForm();
         updatePreview();
+        updateAnkiButtonVisibility();
         loadHistory(validateForm, updatePreview, onHistoryLanguageChange);
     });
 }
@@ -306,6 +323,10 @@ DOM.form.addEventListener("submit", async function (event) {
 // Anki Connect Button
 // ======================================
 
+if (!isAnkiEnabled()) {
+    DOM.ankiConnectButton.style.display = "none";
+}
+
 DOM.ankiConnectButton.addEventListener("click", async () => {
     const sentenceRaw = DOM.sentenceField.value.trim();
     const wordRaw = DOM.wordField.value.trim();
@@ -356,6 +377,7 @@ initPagination();
 initHistoryIO(validateForm, updatePreview, onHistoryLanguageChange);
 setupPaginationButtons();
 initLanguageSelector();
+updateAnkiButtonVisibility();
 updatePageTitle();
 validateForm();
 updatePreview();

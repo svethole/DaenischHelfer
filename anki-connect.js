@@ -1,8 +1,13 @@
+import { getAnkiConfig, getActiveLang, getAnkiPort } from "./config.js";
+
+
 // ======================================
 // Anki Connect Plus Integration
 // ======================================
+function getAnkiUrl() {
+    return `http://localhost:${getAnkiPort()}`;
+}
 
-const ANKI_CONNECT_URL = "http://localhost:8765";
 const ANKI_VERSION = 6;
 
 // ======================================
@@ -11,6 +16,13 @@ const ANKI_VERSION = 6;
 
 export async function createAnkiCard(sentence, word, audioBlob, lang) {
     try {
+        const ankiConfig = getAnkiConfig();
+        
+        if (!ankiConfig) {
+            alert("⚠️ Keine Anki-Konfiguration für die aktive Sprache gefunden.");
+            return false;
+        }
+        
         // 1. Audio-Blob als Base64 kodieren
         const base64Audio = audioBlob ? await blobToBase64(audioBlob) : null;
         
@@ -19,29 +31,31 @@ export async function createAnkiCard(sentence, word, audioBlob, lang) {
             ? `anki_tts_${Date.now()}.mp3` 
             : null;
         
-        // 3. Request-Payload bauen
+        // 3. Felder dynamisch befüllen
+        const fields = {};
+        fields[ankiConfig.fields.sentence] = sentence;
+        fields[ankiConfig.fields.word] = word;
+        
+        // 4. Request-Payload bauen
         const payload = {
             action: "guiAddCards",
             params: {
                 note: {
-                    deckName: "Danish::Manuell",
-                    modelName: "Danish",
-                    fields: {
-                        "Sentence": sentence,
-                        "Word": word
-                    },
+                    deckName: ankiConfig.deck,
+                    modelName: ankiConfig.model,
+                    fields: fields,
                     audio: audioBlob ? [{
                         filename: filename,
                         data: base64Audio,
-                        fields: ["Audio"]
+                        fields: [ankiConfig.fields.audio]
                     }] : []
                 }
             },
             version: ANKI_VERSION
         };
         
-        // 4. Request senden
-        const response = await fetch(ANKI_CONNECT_URL, {
+        // 5. Request senden
+        const response = await fetch(getAnkiUrl(), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -65,7 +79,13 @@ export async function createAnkiCard(sentence, word, audioBlob, lang) {
         
         // Benutzerfreundliche Fehlermeldung
         if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
-            alert("⚠️ Anki ist nicht erreichbar.\n\nBitte stelle sicher, dass:\n• Anki geöffnet ist\n• Anki Connect Plus installiert ist\n• Kein anderes Programm Port 8765 blockiert");
+            alert("⚠️ Anki ist nicht erreichbar.\n\nBitte stelle sicher, dass:\n• Anki geöffnet ist\n• Anki Connect Plus installiert ist");
+        } else if (error.message.includes("model was not found")) {
+            const cfg = getAnkiConfig();
+            alert(`⚠️ Notiztyp nicht gefunden: "${cfg?.model}"\n\nBitte prüfe den Namen in der api-config.js`);
+        } else if (error.message.includes("deck was not found")) {
+            const cfg = getAnkiConfig();
+            alert(`⚠️ Deck nicht gefunden: "${cfg?.deck}"\n\nBitte prüfe den Namen in der api-config.js`);
         } else {
             alert(`⚠️ Fehler beim Erstellen der Anki-Karte:\n\n${error.message}`);
         }
@@ -80,7 +100,7 @@ export async function createAnkiCard(sentence, word, audioBlob, lang) {
 
 export async function testAnkiConnection() {
     try {
-        const response = await fetch(ANKI_CONNECT_URL, {
+        const response = await fetch(getAnkiUrl(), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
