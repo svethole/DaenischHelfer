@@ -31,6 +31,7 @@ import {
 } from "./tts-cache.js";
 import { createInfoOverlay } from "./info-overlay.js";
 import { initAudioPlayer, resetPlayer } from "./audio-player.js";
+import { initHistoryIO } from "./history-io.js";
 
 
 
@@ -289,6 +290,7 @@ if (infoButton) {
     infoButton.addEventListener("click", createInfoOverlay);
 }
 initPagination();
+initHistoryIO(validateForm, updatePreview, onHistoryLanguageChange);
 setupPaginationButtons();
 initLanguageSelector();
 updatePageTitle();

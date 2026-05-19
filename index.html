@@ -115,13 +115,29 @@
         <h2>Letzte Anfragen</h2>
 
         <div class="flex-center gap-sm">
+            <!-- NEU: Export/Import -->
+            <button type="button" id="exportHistoryButton"
+                    class="btn btn-sm"
+                    title="History exportieren">
+                📤 Export
+            </button>
+
+            <button type="button" id="importHistoryButton"
+                    class="btn btn-sm"
+                    title="History importieren">
+                📥 Import
+            </button>
+
+            <!-- Versteckte Datei-Eingabe für Import -->
+            <input type="file" id="importFileInput" accept=".json" class="hidden">
+
             <button type="button" id="toggleHistoryButton"
-                    class="btn">
+                    class="btn btn-sm">
                 Letzte Anfragen verbergen
             </button>
 
             <button type="button" id="clearHistoryButton"
-                    class="btn btn-danger">
+                    class="btn btn-sm btn-danger">
                 Verlauf löschen
             </button>
         </div>
@@ -194,6 +210,7 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script type="module" src="app.js"></script>
 
 </body>

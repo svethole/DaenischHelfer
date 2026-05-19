@@ -60,3 +60,8 @@ export const pageSizeSelect = document.getElementById("pageSizeSelect");
 export const customPageSize = document.getElementById("customPageSize");
 export const pageSizeWarning = document.getElementById("pageSizeWarning");
 export const paginationInfo = document.getElementById("paginationInfo");
+
+// History Export / Import
+export const exportHistoryButton = document.getElementById("exportHistoryButton");
+export const importHistoryButton = document.getElementById("importHistoryButton");
+export const importFileInput = document.getElementById("importFileInput");
